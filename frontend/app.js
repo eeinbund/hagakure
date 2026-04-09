@@ -151,6 +151,219 @@ const roleData = [
   }
 ];
 
+const weatherMarketCatalog = [
+  {
+    ticker: "WX-DET-RAIN-001",
+    title: "Will Detroit officially record measurable rain by Friday close?",
+    city: "Detroit",
+    region: "Michigan",
+    event: "Rain",
+    descriptors: ["detroit", "rain", "precipitation", "michigan", "friday"],
+    currentPrice: 0.58,
+    yesBid: 0.57,
+    yesAsk: 0.60,
+    lastPrice: 0.59,
+    volume: 184000,
+    horizonHours: 22,
+    signalBias: 0.18,
+    volatility: 0.24
+  },
+  {
+    ticker: "WX-DET-SNOW-002",
+    title: "Will Detroit record at least 2 inches of snow this weekend?",
+    city: "Detroit",
+    region: "Michigan",
+    event: "Snow",
+    descriptors: ["detroit", "snow", "weekend", "michigan", "winter"],
+    currentPrice: 0.34,
+    yesBid: 0.32,
+    yesAsk: 0.36,
+    lastPrice: 0.33,
+    volume: 126500,
+    horizonHours: 41,
+    signalBias: -0.11,
+    volatility: 0.31
+  },
+  {
+    ticker: "WX-CHI-WIND-003",
+    title: "Will Chicago O'Hare see wind gusts above 25 mph by tonight?",
+    city: "Chicago",
+    region: "Illinois",
+    event: "Wind",
+    descriptors: ["chicago", "wind", "gusts", "illinois", "ohare"],
+    currentPrice: 0.63,
+    yesBid: 0.61,
+    yesAsk: 0.65,
+    lastPrice: 0.62,
+    volume: 162000,
+    horizonHours: 14,
+    signalBias: 0.23,
+    volatility: 0.28
+  },
+  {
+    ticker: "WX-CHI-RAIN-004",
+    title: "Will Chicago get at least 0.25 inches of rain tomorrow?",
+    city: "Chicago",
+    region: "Illinois",
+    event: "Rain",
+    descriptors: ["chicago", "rain", "precipitation", "illinois", "tomorrow"],
+    currentPrice: 0.46,
+    yesBid: 0.44,
+    yesAsk: 0.48,
+    lastPrice: 0.45,
+    volume: 148400,
+    horizonHours: 27,
+    signalBias: 0.07,
+    volatility: 0.27
+  },
+  {
+    ticker: "WX-NYC-SNOW-005",
+    title: "Will Central Park record at least 1 inch of snow tomorrow?",
+    city: "New York",
+    region: "New York",
+    event: "Snow",
+    descriptors: ["new york", "central park", "snow", "winter", "nyc"],
+    currentPrice: 0.41,
+    yesBid: 0.39,
+    yesAsk: 0.43,
+    lastPrice: 0.40,
+    volume: 209300,
+    horizonHours: 24,
+    signalBias: -0.04,
+    volatility: 0.33
+  },
+  {
+    ticker: "WX-NYC-HEAT-006",
+    title: "Will New York hit 85 degrees by Saturday afternoon?",
+    city: "New York",
+    region: "New York",
+    event: "Heat",
+    descriptors: ["new york", "temperature", "heat", "degrees", "nyc", "saturday"],
+    currentPrice: 0.52,
+    yesBid: 0.51,
+    yesAsk: 0.54,
+    lastPrice: 0.53,
+    volume: 173900,
+    horizonHours: 33,
+    signalBias: 0.12,
+    volatility: 0.22
+  },
+  {
+    ticker: "WX-PHX-HEAT-007",
+    title: "Will Phoenix hit 100 degrees this weekend?",
+    city: "Phoenix",
+    region: "Arizona",
+    event: "Heat",
+    descriptors: ["phoenix", "heat", "temperature", "arizona", "weekend"],
+    currentPrice: 0.72,
+    yesBid: 0.70,
+    yesAsk: 0.74,
+    lastPrice: 0.71,
+    volume: 155700,
+    horizonHours: 46,
+    signalBias: 0.29,
+    volatility: 0.19
+  },
+  {
+    ticker: "WX-DAL-STORM-008",
+    title: "Will Dallas log a severe thunderstorm warning tonight?",
+    city: "Dallas",
+    region: "Texas",
+    event: "Storm",
+    descriptors: ["dallas", "storm", "warning", "texas", "thunderstorm"],
+    currentPrice: 0.38,
+    yesBid: 0.36,
+    yesAsk: 0.40,
+    lastPrice: 0.39,
+    volume: 134100,
+    horizonHours: 12,
+    signalBias: -0.08,
+    volatility: 0.36
+  },
+  {
+    ticker: "WX-MIA-RAIN-009",
+    title: "Will Miami record afternoon rainfall tomorrow?",
+    city: "Miami",
+    region: "Florida",
+    event: "Rain",
+    descriptors: ["miami", "rain", "florida", "afternoon", "precipitation"],
+    currentPrice: 0.66,
+    yesBid: 0.64,
+    yesAsk: 0.68,
+    lastPrice: 0.65,
+    volume: 166800,
+    horizonHours: 19,
+    signalBias: 0.21,
+    volatility: 0.21
+  },
+  {
+    ticker: "WX-DEN-SNOW-010",
+    title: "Will Denver receive 4 inches of snow before Monday morning?",
+    city: "Denver",
+    region: "Colorado",
+    event: "Snow",
+    descriptors: ["denver", "snow", "colorado", "monday", "winter"],
+    currentPrice: 0.48,
+    yesBid: 0.46,
+    yesAsk: 0.50,
+    lastPrice: 0.47,
+    volume: 144600,
+    horizonHours: 54,
+    signalBias: 0.05,
+    volatility: 0.34
+  },
+  {
+    ticker: "WX-ATL-TEMP-011",
+    title: "Will Atlanta stay above 70 degrees overnight?",
+    city: "Atlanta",
+    region: "Georgia",
+    event: "Temperature",
+    descriptors: ["atlanta", "temperature", "overnight", "georgia", "degrees"],
+    currentPrice: 0.57,
+    yesBid: 0.56,
+    yesAsk: 0.59,
+    lastPrice: 0.58,
+    volume: 118200,
+    horizonHours: 15,
+    signalBias: 0.09,
+    volatility: 0.18
+  },
+  {
+    ticker: "WX-BOS-WIND-012",
+    title: "Will Boston Logan see sustained winds above 20 mph tomorrow?",
+    city: "Boston",
+    region: "Massachusetts",
+    event: "Wind",
+    descriptors: ["boston", "wind", "logan", "massachusetts", "tomorrow"],
+    currentPrice: 0.44,
+    yesBid: 0.42,
+    yesAsk: 0.46,
+    lastPrice: 0.45,
+    volume: 139800,
+    horizonHours: 29,
+    signalBias: -0.02,
+    volatility: 0.26
+  }
+];
+
+const pricerPhaseText = [
+  "Search weather markets from your keyword.",
+  "Estimate mu and sigma from the path.",
+  "Solve the PDE anchor and run Euler-Maruyama futures.",
+  "Return the most correlated weather contracts."
+];
+
+const pricerState = {
+  keyword: "",
+  correlatedCount: 5,
+  filteredMarkets: [],
+  selectedTicker: "",
+  result: null,
+  loading: false,
+  phaseIndex: 0,
+  runId: 0
+};
+
 const navLinks = document.querySelectorAll(".desktop-nav a, .mobile-nav a");
 const menuToggle = document.querySelector(".menu-toggle");
 const mobileNav = document.querySelector(".mobile-nav");
@@ -172,6 +385,121 @@ const roleDetail = document.getElementById("role-detail");
 const roleFilters = document.querySelectorAll(".role-filter");
 const contactForm = document.getElementById("contact-form");
 const formResponse = document.getElementById("form-response");
+const pricerKeywordInput = document.getElementById("pricer-keyword");
+const pricerSearchButton = document.getElementById("pricer-search");
+const pricerKeywordChips = document.querySelectorAll("[data-keyword-chip]");
+const pricerCorrelationInput = document.getElementById("pricer-correlation-count");
+const pricerCorrelationOutput = document.getElementById("pricer-correlation-output");
+const pricerRunButton = document.getElementById("pricer-run");
+const pricerStatusTitle = document.getElementById("pricer-status-title");
+const pricerStatusText = document.getElementById("pricer-status-text");
+const pricerWarning = document.getElementById("pricer-warning");
+const pricerModeBadge = document.getElementById("pricer-mode-badge");
+const pricerMarketList = document.getElementById("pricer-market-list");
+const pricerMarketCount = document.getElementById("pricer-market-count");
+const pricerSummaryGrid = document.getElementById("pricer-summary-grid");
+const pricerSelectedLabel = document.getElementById("pricer-selected-label");
+const pricerCorrelationLabel = document.getElementById("pricer-correlation-label");
+const pricerCorrelationList = document.getElementById("pricer-correlation-list");
+const pricerPhaseList = document.getElementById("pricer-phase-list");
+const pricerNetworkCanvas = document.getElementById("pricer-network");
+const pricerNetworkFrame = document.getElementById("pricer-network-frame");
+const pricerPathCanvas = document.getElementById("pricer-path-chart");
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function average(values) {
+  if (!values.length) return 0;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function standardDeviation(values) {
+  if (values.length < 2) return 0;
+  const mean = average(values);
+  const variance = average(values.map((value) => (value - mean) ** 2));
+  return Math.sqrt(variance);
+}
+
+function quantile(values, ratio) {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const index = (sorted.length - 1) * ratio;
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+  if (lower === upper) return sorted[lower];
+  const weight = index - lower;
+  return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+}
+
+function sigmoid(value) {
+  return 1 / (1 + Math.exp(-value));
+}
+
+function logit(probability) {
+  const clamped = clamp(probability, 0.001, 0.999);
+  return Math.log(clamped / (1 - clamped));
+}
+
+function formatCents(value) {
+  return `${(value * 100).toFixed(1)}c`;
+}
+
+function formatPercent(value) {
+  return `${(value * 100).toFixed(1)}%`;
+}
+
+function formatSigned(value) {
+  return `${value >= 0 ? "+" : ""}${value.toFixed(3)}`;
+}
+
+function formatVolume(value) {
+  if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}m`;
+  }
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(1)}k`;
+  }
+  return `${value}`;
+}
+
+function hashString(text) {
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function createSeededRandom(seed) {
+  let state = seed >>> 0;
+  return function next() {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+function gaussianRandom(random) {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = random();
+  while (v === 0) v = random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+function resizeCanvasToDisplaySize(canvas) {
+  if (!canvas) return { width: 0, height: 0 };
+  const ratio = window.devicePixelRatio || 1;
+  const width = Math.floor(canvas.clientWidth * ratio);
+  const height = Math.floor(canvas.clientHeight * ratio);
+  if (canvas.width !== width || canvas.height !== height) {
+    canvas.width = width;
+    canvas.height = height;
+  }
+  return { width, height, ratio };
+}
 
 function renderStrategy(key) {
   const entry = strategyData[key];
@@ -417,6 +745,791 @@ function initChart() {
   draw();
 }
 
+function getSelectedPricerMarket() {
+  return pricerState.filteredMarkets.find((market) => market.ticker === pricerState.selectedTicker) || null;
+}
+
+function scoreMarketAgainstKeyword(market, keyword) {
+  const normalized = keyword.trim().toLowerCase();
+  const tokens = normalized.split(/\s+/).filter(Boolean);
+  if (!tokens.length) return 1;
+
+  const searchText = [market.title, market.city, market.region, market.event, ...(market.descriptors || [])]
+    .join(" ")
+    .toLowerCase();
+
+  let score = 0;
+  tokens.forEach((token) => {
+    if (market.city.toLowerCase() === token) score += 6;
+    if (market.event.toLowerCase() === token) score += 5;
+    if (searchText.includes(token)) score += 3;
+    if (market.title.toLowerCase().startsWith(token)) score += 1;
+  });
+
+  return score;
+}
+
+function searchWeatherMarkets(keyword) {
+  return weatherMarketCatalog
+    .map((market) => ({ ...market, score: scoreMarketAgainstKeyword(market, keyword) }))
+    .filter((market) => market.score > 0)
+    .sort((left, right) => (right.score - left.score) || (right.volume - left.volume))
+    .slice(0, 6);
+}
+
+function vectorForMarket(market) {
+  return [
+    market.currentPrice,
+    market.yesBid,
+    market.yesAsk,
+    market.lastPrice,
+    clamp(market.horizonHours / 72, 0, 1),
+    clamp(market.signalBias + 0.5, 0, 1),
+    clamp(market.volatility, 0, 1)
+  ];
+}
+
+function cosineSimilarity(left, right) {
+  let dot = 0;
+  let leftNorm = 0;
+  let rightNorm = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    dot += left[index] * right[index];
+    leftNorm += left[index] ** 2;
+    rightNorm += right[index] ** 2;
+  }
+  const denominator = Math.sqrt(leftNorm) * Math.sqrt(rightNorm);
+  return denominator ? dot / denominator : 0;
+}
+
+function findCorrelatedMarkets(targetMarket, count) {
+  const targetVector = vectorForMarket(targetMarket);
+  return weatherMarketCatalog
+    .filter((market) => market.ticker !== targetMarket.ticker)
+    .map((market) => ({
+      ...market,
+      correlation: cosineSimilarity(targetVector, vectorForMarket(market))
+    }))
+    .sort((left, right) => right.correlation - left.correlation)
+    .slice(0, count);
+}
+
+function buildObservedPath(market, seed) {
+  const random = createSeededRandom(seed);
+  const steps = 48;
+  let value = clamp(
+    market.currentPrice - market.signalBias * 0.08 + (random() - 0.5) * 0.08,
+    0.06,
+    0.94
+  );
+  const path = [];
+
+  for (let step = 0; step < steps; step += 1) {
+    const progress = step / (steps - 1);
+    const wave = Math.sin(progress * Math.PI * 2.2 + random() * 0.8) * market.volatility * 0.06;
+    const driftTarget = market.currentPrice + wave + market.signalBias * (progress - 0.42) * 0.1;
+    const shock = gaussianRandom(random) * market.volatility * 0.016;
+    value = clamp(value + (driftTarget - value) * 0.24 + shock, 0.03, 0.97);
+    path.push(value);
+  }
+
+  path[path.length - 1] = market.currentPrice;
+  return path;
+}
+
+function estimateMuSigma(path, market) {
+  const logits = path.map((value) => logit(value));
+  const diffs = logits.slice(1).map((value, index) => value - logits[index]);
+  const meanDiff = average(diffs);
+  const realizedVol = standardDeviation(diffs);
+
+  return {
+    mu: clamp(meanDiff * 5.8 + market.signalBias * 0.45, -0.45, 0.45),
+    sigma: clamp(realizedVol * 7.4 + market.volatility * 0.58 + 0.05, 0.08, 0.72)
+  };
+}
+
+function solvePdeAnchor(currentPrice, mu, sigma, horizonHours) {
+  const horizonScale = clamp(horizonHours / 30, 0.45, 1.8);
+  const pullToMiddle = (0.5 - currentPrice) * 0.08;
+  const anchor = currentPrice + mu * 0.11 * horizonScale - sigma * 0.024 * horizonScale + pullToMiddle;
+  return clamp(anchor, 0.01, 0.99);
+}
+
+function runEulerMaruyama(currentPrice, mu, sigma, horizonHours, seed) {
+  const pathCount = 180;
+  const steps = clamp(Math.round(horizonHours * 1.4), 18, 52);
+  const dt = 1 / steps;
+  const allPaths = [];
+
+  for (let pathIndex = 0; pathIndex < pathCount; pathIndex += 1) {
+    const random = createSeededRandom(seed + pathIndex * 977);
+    let latent = logit(currentPrice);
+    const probabilities = [currentPrice];
+
+    for (let step = 0; step < steps; step += 1) {
+      const shock = gaussianRandom(random);
+      latent += (mu - 0.55 * latent) * dt + sigma * Math.sqrt(dt) * shock * 0.42;
+      probabilities.push(clamp(sigmoid(latent), 0.01, 0.99));
+    }
+
+    allPaths.push(probabilities);
+  }
+
+  const meanPath = [];
+  const lowerPath = [];
+  const upperPath = [];
+  for (let step = 0; step <= steps; step += 1) {
+    const column = allPaths.map((path) => path[step]);
+    meanPath.push(average(column));
+    lowerPath.push(quantile(column, 0.1));
+    upperPath.push(quantile(column, 0.9));
+  }
+
+  return {
+    finals: allPaths.map((path) => path[path.length - 1]),
+    meanPath,
+    lowerPath,
+    upperPath
+  };
+}
+
+function simulatePricerResult(market, keyword, correlatedCount) {
+  const seed = hashString(`${market.ticker}:${keyword}:${correlatedCount}`);
+  const observedPath = buildObservedPath(market, seed);
+  const { mu, sigma } = estimateMuSigma(observedPath, market);
+  const pdeAnchor = solvePdeAnchor(market.currentPrice, mu, sigma, market.horizonHours);
+  const monteCarlo = runEulerMaruyama(market.currentPrice, mu, sigma, market.horizonHours, seed + 17);
+  const predictedPrice = average(monteCarlo.finals);
+  const standardError = standardDeviation(monteCarlo.finals) / Math.sqrt(monteCarlo.finals.length);
+  const confidenceInterval = [
+    clamp(predictedPrice - 1.96 * standardError, 0.01, 0.99),
+    clamp(predictedPrice + 1.96 * standardError, 0.01, 0.99)
+  ];
+
+  return {
+    market,
+    observedPath,
+    mu,
+    sigma,
+    pdeAnchor,
+    predictedPrice,
+    confidenceInterval,
+    terminalInterval: [
+      clamp(quantile(monteCarlo.finals, 0.05), 0.01, 0.99),
+      clamp(quantile(monteCarlo.finals, 0.95), 0.01, 0.99)
+    ],
+    forecastMeanPath: monteCarlo.meanPath,
+    forecastLowerPath: monteCarlo.lowerPath,
+    forecastUpperPath: monteCarlo.upperPath,
+    correlatedMarkets: findCorrelatedMarkets(market, correlatedCount)
+  };
+}
+
+function setPricerStatus(mode, title, text, showWarning = false) {
+  if (pricerModeBadge) pricerModeBadge.textContent = mode;
+  if (pricerStatusTitle) pricerStatusTitle.textContent = title;
+  if (pricerStatusText) pricerStatusText.textContent = text;
+  if (pricerWarning) pricerWarning.hidden = !showWarning;
+  pricerNetworkFrame?.classList.toggle("is-loading", showWarning);
+}
+
+function renderPricerPhaseList(activeIndex, complete = false) {
+  if (!pricerPhaseList) return;
+  pricerPhaseList.querySelectorAll("li").forEach((item, index) => {
+    item.classList.toggle("is-active", !complete && index === activeIndex);
+    item.classList.toggle("is-complete", complete || index < activeIndex);
+  });
+}
+
+function syncPricerControls() {
+  const hasSelection = Boolean(getSelectedPricerMarket());
+  if (pricerRunButton) {
+    pricerRunButton.disabled = pricerState.loading || !hasSelection;
+    pricerRunButton.textContent = pricerState.loading ? "Pricing..." : "Price This Contract";
+  }
+  if (pricerSearchButton) pricerSearchButton.disabled = pricerState.loading;
+  if (pricerKeywordInput) pricerKeywordInput.disabled = pricerState.loading;
+  if (pricerCorrelationInput) pricerCorrelationInput.disabled = pricerState.loading;
+  pricerKeywordChips.forEach((chip) => {
+    chip.disabled = pricerState.loading;
+  });
+}
+
+function updatePricerSelectionLabel() {
+  const market = getSelectedPricerMarket();
+  if (pricerSelectedLabel) {
+    pricerSelectedLabel.textContent = market ? market.ticker : "No contract selected";
+  }
+}
+
+function renderPricerMarketList() {
+  if (!pricerMarketList || !pricerMarketCount) return;
+
+  const selected = getSelectedPricerMarket();
+  pricerMarketCount.textContent = `${pricerState.filteredMarkets.length} loaded`;
+
+  if (!pricerState.filteredMarkets.length) {
+    pricerMarketList.innerHTML = `
+      <article class="pricer-empty">
+        No weather contracts matched that keyword. Try rain, snow, heat, wind, Detroit, or New York.
+      </article>
+    `;
+    updatePricerSelectionLabel();
+    syncPricerControls();
+    return;
+  }
+
+  pricerMarketList.innerHTML = pricerState.filteredMarkets
+    .map(
+      (market) => `
+        <button
+          class="pricer-market-item ${selected?.ticker === market.ticker ? "is-active" : ""}"
+          type="button"
+          data-market-ticker="${market.ticker}"
+          ${pricerState.loading ? "disabled" : ""}
+        >
+          <div class="pricer-market-top">
+            <div>
+              <span class="pricer-market-city">${market.city}</span>
+              <h3>${market.title}</h3>
+            </div>
+            <span class="pricer-inline-pill">${market.event}</span>
+          </div>
+          <p>${market.region} · ${market.horizonHours}h horizon · ${formatVolume(market.volume)} volume</p>
+          <div class="pricer-market-meta">
+            <span>Last ${formatCents(market.lastPrice)}</span>
+            <span>Bid ${formatCents(market.yesBid)}</span>
+            <span>Ask ${formatCents(market.yesAsk)}</span>
+          </div>
+        </button>
+      `
+    )
+    .join("");
+
+  pricerMarketList.querySelectorAll("[data-market-ticker]").forEach((button) => {
+    button.addEventListener("click", () => {
+      pricerState.selectedTicker = button.dataset.marketTicker || "";
+      pricerState.result = null;
+      renderPricerMarketList();
+      renderPricerSummary(null);
+      renderPricerCorrelatedMarkets(null);
+      drawPricerPathChart(null);
+      updatePricerSelectionLabel();
+      const market = getSelectedPricerMarket();
+      if (market) {
+        setPricerStatus(
+          "Primed",
+          `${market.city} weather contract locked.`,
+          `Now pick how many correlated markets you want back, then price ${market.ticker}.`,
+          false
+        );
+      }
+      syncPricerControls();
+    });
+  });
+
+  updatePricerSelectionLabel();
+  syncPricerControls();
+}
+
+function renderPricerSummary(result) {
+  if (!pricerSummaryGrid) return;
+
+  if (!result) {
+    pricerSummaryGrid.innerHTML = `
+      <article class="pricer-summary-card">
+        <span class="pricer-summary-kicker">Predicted Price</span>
+        <strong>--</strong>
+        <p>Run the demo to estimate a toy fair value.</p>
+      </article>
+      <article class="pricer-summary-card">
+        <span class="pricer-summary-kicker">95% Confidence Interval</span>
+        <strong>--</strong>
+        <p>Monte Carlo uncertainty will land here.</p>
+      </article>
+      <article class="pricer-summary-card">
+        <span class="pricer-summary-kicker">PDE Anchor</span>
+        <strong>--</strong>
+        <p>The deterministic anchor price shows up here.</p>
+      </article>
+      <article class="pricer-summary-card">
+        <span class="pricer-summary-kicker">Demo MLP</span>
+        <strong>mu -- / sigma --</strong>
+        <p>The site estimates parameters from a synthetic path.</p>
+      </article>
+      <article class="pricer-summary-card">
+        <span class="pricer-summary-kicker">Current Market</span>
+        <strong>--</strong>
+        <p>Select a weather contract to begin.</p>
+      </article>
+      <article class="pricer-summary-card">
+        <span class="pricer-summary-kicker">Terminal Range</span>
+        <strong>--</strong>
+        <p>Terminal path dispersion appears after pricing.</p>
+      </article>
+    `;
+    return;
+  }
+
+  const edge = result.predictedPrice - result.market.lastPrice;
+
+  pricerSummaryGrid.innerHTML = `
+    <article class="pricer-summary-card">
+      <span class="pricer-summary-kicker">Predicted Price</span>
+      <strong>${formatCents(result.predictedPrice)}</strong>
+      <p>Demo mean fair value after Euler-Maruyama simulation.</p>
+    </article>
+    <article class="pricer-summary-card">
+      <span class="pricer-summary-kicker">95% Confidence Interval</span>
+      <strong>${formatCents(result.confidenceInterval[0])} - ${formatCents(result.confidenceInterval[1])}</strong>
+      <p>Confidence interval for the predicted contract price.</p>
+    </article>
+    <article class="pricer-summary-card">
+      <span class="pricer-summary-kicker">PDE Anchor</span>
+      <strong>${formatCents(result.pdeAnchor)}</strong>
+      <p>Deterministic anchor before the futures simulation fans out.</p>
+    </article>
+    <article class="pricer-summary-card">
+      <span class="pricer-summary-kicker">Demo MLP</span>
+      <strong>mu ${formatSigned(result.mu)} / sigma ${result.sigma.toFixed(3)}</strong>
+      <p>Path-implied parameters from the toy calibration step.</p>
+    </article>
+    <article class="pricer-summary-card">
+      <span class="pricer-summary-kicker">Current Market</span>
+      <strong>${formatCents(result.market.lastPrice)}</strong>
+      <p>${edge >= 0 ? "Model edge" : "Model discount"} ${formatCents(Math.abs(edge))} vs. last trade.</p>
+    </article>
+    <article class="pricer-summary-card">
+      <span class="pricer-summary-kicker">Terminal Range</span>
+      <strong>${formatCents(result.terminalInterval[0])} - ${formatCents(result.terminalInterval[1])}</strong>
+      <p>90% of simulated terminal paths settled inside this band.</p>
+    </article>
+  `;
+}
+
+function renderPricerCorrelatedMarkets(result) {
+  if (!pricerCorrelationList || !pricerCorrelationLabel) return;
+
+  pricerCorrelationLabel.textContent = `Top ${pricerState.correlatedCount}`;
+
+  if (!result) {
+    pricerCorrelationList.innerHTML = `
+      <article class="pricer-empty">
+        Price a contract and the graph-style correlation panel will return the top ${pricerState.correlatedCount} weather markets.
+      </article>
+    `;
+    return;
+  }
+
+  pricerCorrelationList.innerHTML = result.correlatedMarkets
+    .map(
+      (market, index) => `
+        <article class="pricer-correlation-item">
+          <span class="pricer-correlation-rank">${String(index + 1).padStart(2, "0")}</span>
+          <div class="pricer-correlation-copy">
+            <strong>${market.title}</strong>
+            <p>${market.city} · ${market.event} · corr ${formatPercent(market.correlation)}</p>
+          </div>
+          <span class="pricer-inline-pill">${formatCents(market.lastPrice)}</span>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function drawPricerPathChart(result) {
+  if (!pricerPathCanvas) return;
+
+  const context = pricerPathCanvas.getContext("2d");
+  if (!context) return;
+
+  const { width, height } = resizeCanvasToDisplaySize(pricerPathCanvas);
+  const padding = 26 * (window.devicePixelRatio || 1);
+  context.clearRect(0, 0, width, height);
+
+  const gridColor = "rgba(255, 255, 255, 0.07)";
+  context.strokeStyle = gridColor;
+  context.lineWidth = 1;
+  for (let index = 0; index <= 4; index += 1) {
+    const y = padding + ((height - padding * 2) / 4) * index;
+    context.beginPath();
+    context.moveTo(padding, y);
+    context.lineTo(width - padding, y);
+    context.stroke();
+  }
+
+  if (!result) {
+    context.fillStyle = "rgba(244, 239, 232, 0.62)";
+    context.font = `${15 * (window.devicePixelRatio || 1)}px IBM Plex Sans`;
+    context.fillText("Observed path and forecast ribbon will appear here.", padding, height / 2);
+    return;
+  }
+
+  const observed = result.observedPath;
+  const forecastMean = result.forecastMeanPath.slice(1);
+  const forecastLower = result.forecastLowerPath.slice(1);
+  const forecastUpper = result.forecastUpperPath.slice(1);
+  const totalPoints = observed.length + forecastMean.length;
+  const chartWidth = width - padding * 2;
+  const chartHeight = height - padding * 2;
+  const xForIndex = (index) => padding + (chartWidth * index) / Math.max(totalPoints - 1, 1);
+  const yForValue = (value) => height - padding - chartHeight * value;
+
+  context.fillStyle = "rgba(255, 70, 83, 0.1)";
+  context.beginPath();
+  forecastUpper.forEach((value, index) => {
+    const x = xForIndex(observed.length - 1 + index);
+    const y = yForValue(value);
+    if (index === 0) {
+      context.moveTo(x, y);
+    } else {
+      context.lineTo(x, y);
+    }
+  });
+  for (let index = forecastLower.length - 1; index >= 0; index -= 1) {
+    const x = xForIndex(observed.length - 1 + index);
+    const y = yForValue(forecastLower[index]);
+    context.lineTo(x, y);
+  }
+  context.closePath();
+  context.fill();
+
+  context.strokeStyle = "rgba(244, 239, 232, 0.7)";
+  context.lineWidth = 2.4 * (window.devicePixelRatio || 1);
+  context.beginPath();
+  observed.forEach((value, index) => {
+    const x = xForIndex(index);
+    const y = yForValue(value);
+    if (index === 0) {
+      context.moveTo(x, y);
+    } else {
+      context.lineTo(x, y);
+    }
+  });
+  context.stroke();
+
+  context.strokeStyle = "rgba(255, 70, 83, 0.95)";
+  context.lineWidth = 3 * (window.devicePixelRatio || 1);
+  context.beginPath();
+  forecastMean.forEach((value, index) => {
+    const x = xForIndex(observed.length - 1 + index);
+    const y = yForValue(value);
+    if (index === 0) {
+      context.moveTo(x, yForValue(observed[observed.length - 1]));
+    }
+    context.lineTo(x, y);
+  });
+  context.stroke();
+
+  const currentX = xForIndex(observed.length - 1);
+  const currentY = yForValue(observed[observed.length - 1]);
+  const predictedX = xForIndex(totalPoints - 1);
+  const predictedY = yForValue(result.predictedPrice);
+
+  context.fillStyle = "#f4efe8";
+  context.beginPath();
+  context.arc(currentX, currentY, 4 * (window.devicePixelRatio || 1), 0, Math.PI * 2);
+  context.fill();
+
+  context.fillStyle = "#ff4653";
+  context.beginPath();
+  context.arc(predictedX, predictedY, 4.8 * (window.devicePixelRatio || 1), 0, Math.PI * 2);
+  context.fill();
+
+  context.fillStyle = "rgba(244, 239, 232, 0.72)";
+  context.font = `${12 * (window.devicePixelRatio || 1)}px IBM Plex Sans`;
+  context.fillText("Observed path", padding, padding - 6 * (window.devicePixelRatio || 1));
+  context.fillStyle = "rgba(255, 70, 83, 0.82)";
+  context.fillText("Projected mean + forecast band", padding + 140 * (window.devicePixelRatio || 1), padding - 6 * (window.devicePixelRatio || 1));
+}
+
+const pricerNetworkState = {
+  nodes: [],
+  edges: []
+};
+
+function initPricerNetwork() {
+  if (!pricerNetworkCanvas) return;
+
+  const baseSeed = hashString("hagakure-pricer-network");
+  pricerNetworkState.nodes = weatherMarketCatalog.map((market, index) => {
+    const random = createSeededRandom(baseSeed + index * 97);
+    return {
+      market,
+      x: 0.08 + random() * 0.84,
+      y: 0.12 + random() * 0.72,
+      vx: (random() - 0.5) * 0.0018,
+      vy: (random() - 0.5) * 0.0014,
+      radius: 4 + random() * 2.8
+    };
+  });
+
+  pricerNetworkState.edges = [];
+  for (let leftIndex = 0; leftIndex < pricerNetworkState.nodes.length; leftIndex += 1) {
+    for (let rightIndex = leftIndex + 1; rightIndex < pricerNetworkState.nodes.length; rightIndex += 1) {
+      const left = weatherMarketCatalog[leftIndex];
+      const right = weatherMarketCatalog[rightIndex];
+      const sameEvent = left.event === right.event;
+      const sameRegion = left.region === right.region;
+      const similarity = cosineSimilarity(vectorForMarket(left), vectorForMarket(right));
+      if (similarity > 0.985 || sameEvent || sameRegion) {
+        pricerNetworkState.edges.push([leftIndex, rightIndex, similarity]);
+      }
+    }
+  }
+
+  const context = pricerNetworkCanvas.getContext("2d");
+  if (!context) return;
+
+  function draw(now) {
+    const { width, height } = resizeCanvasToDisplaySize(pricerNetworkCanvas);
+    context.clearRect(0, 0, width, height);
+
+    context.fillStyle = "rgba(4, 4, 4, 0.18)";
+    context.fillRect(0, 0, width, height);
+
+    const selectedTicker = pricerState.selectedTicker;
+    const matchedTickers = new Set(pricerState.filteredMarkets.map((market) => market.ticker));
+    const pulse = pricerState.loading ? 0.55 + 0.45 * Math.sin(now * 0.01) : 0.35 + 0.2 * Math.sin(now * 0.004);
+
+    pricerNetworkState.nodes.forEach((node) => {
+      node.x += node.vx;
+      node.y += node.vy;
+      if (node.x < 0.06 || node.x > 0.94) node.vx *= -1;
+      if (node.y < 0.12 || node.y > 0.88) node.vy *= -1;
+    });
+
+    pricerNetworkState.edges.forEach(([leftIndex, rightIndex, similarity]) => {
+      const left = pricerNetworkState.nodes[leftIndex];
+      const right = pricerNetworkState.nodes[rightIndex];
+      const leftX = left.x * width;
+      const leftY = left.y * height;
+      const rightX = right.x * width;
+      const rightY = right.y * height;
+      const highlighted =
+        left.market.ticker === selectedTicker ||
+        right.market.ticker === selectedTicker ||
+        (matchedTickers.has(left.market.ticker) && matchedTickers.has(right.market.ticker));
+      const alpha = highlighted ? 0.28 + pulse * 0.24 : 0.06 + similarity * 0.08;
+
+      context.strokeStyle = highlighted ? `rgba(255, 94, 106, ${alpha})` : `rgba(255, 255, 255, ${alpha})`;
+      context.lineWidth = highlighted ? 1.5 * (window.devicePixelRatio || 1) : 1 * (window.devicePixelRatio || 1);
+      context.beginPath();
+      context.moveTo(leftX, leftY);
+      context.lineTo(rightX, rightY);
+      context.stroke();
+    });
+
+    if (pricerState.loading && selectedTicker) {
+      const selectedNode = pricerNetworkState.nodes.find((node) => node.market.ticker === selectedTicker);
+      if (selectedNode) {
+        const centerX = selectedNode.x * width;
+        const centerY = selectedNode.y * height;
+        const ringRadius = (32 + pulse * 18) * (window.devicePixelRatio || 1);
+        context.strokeStyle = `rgba(255, 70, 83, ${0.18 + pulse * 0.32})`;
+        context.lineWidth = 2 * (window.devicePixelRatio || 1);
+        context.beginPath();
+        context.arc(centerX, centerY, ringRadius, 0, Math.PI * 2);
+        context.stroke();
+      }
+    }
+
+    pricerNetworkState.nodes.forEach((node) => {
+      const x = node.x * width;
+      const y = node.y * height;
+      const isSelected = node.market.ticker === selectedTicker;
+      const isMatched = matchedTickers.has(node.market.ticker);
+      const radius = (node.radius + (isSelected ? 2.5 : 0) + (pricerState.loading && isMatched ? pulse * 2 : 0))
+        * (window.devicePixelRatio || 1);
+
+      const gradient = context.createRadialGradient(x, y, 0, x, y, radius * 3.2);
+      if (isSelected) {
+        gradient.addColorStop(0, "rgba(255, 116, 126, 1)");
+        gradient.addColorStop(1, "rgba(255, 116, 126, 0)");
+      } else if (isMatched) {
+        gradient.addColorStop(0, "rgba(255, 82, 94, 0.72)");
+        gradient.addColorStop(1, "rgba(255, 82, 94, 0)");
+      } else {
+        gradient.addColorStop(0, "rgba(255, 255, 255, 0.34)");
+        gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+      }
+
+      context.fillStyle = gradient;
+      context.beginPath();
+      context.arc(x, y, radius * 3, 0, Math.PI * 2);
+      context.fill();
+
+      context.fillStyle = isSelected ? "#ff6672" : isMatched ? "rgba(255, 135, 145, 0.95)" : "rgba(244, 239, 232, 0.8)";
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2);
+      context.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
+}
+
+function executePricerSearch(keyword) {
+  pricerState.keyword = keyword.trim();
+  pricerState.filteredMarkets = searchWeatherMarkets(pricerState.keyword);
+  pricerState.selectedTicker = pricerState.filteredMarkets[0]?.ticker || "";
+  pricerState.result = null;
+  renderPricerMarketList();
+  renderPricerSummary(null);
+  renderPricerCorrelatedMarkets(null);
+  drawPricerPathChart(null);
+  updatePricerSelectionLabel();
+  renderPricerPhaseList(0, false);
+
+  if (pricerState.filteredMarkets.length) {
+    const market = getSelectedPricerMarket();
+    setPricerStatus(
+      "Search Ready",
+      `${pricerState.filteredMarkets.length} weather markets matched.`,
+      `Pick a contract, set the correlated-market count, and let the demo price ${market ? market.ticker : "the selected market"}.`,
+      false
+    );
+  } else {
+    setPricerStatus(
+      "No Match",
+      "No weather markets matched that keyword.",
+      "Try a broader weather term like rain, snow, heat, wind, Detroit, Chicago, or New York.",
+      false
+    );
+  }
+
+  syncPricerControls();
+}
+
+function runPricerDemo() {
+  const market = getSelectedPricerMarket();
+  if (!market || pricerState.loading) return;
+
+  const runId = pricerState.runId + 1;
+  pricerState.runId = runId;
+  pricerState.loading = true;
+  pricerState.result = null;
+  renderPricerSummary(null);
+  renderPricerCorrelatedMarkets(null);
+  drawPricerPathChart(null);
+  syncPricerControls();
+
+  const stages = [
+    {
+      mode: "Locking",
+      title: `Locking ${market.ticker} into the weather-only demo.`,
+      text: `Keyword "${pricerState.keyword || market.event}" is shaping the candidate set and the graph neighborhood.`
+    },
+    {
+      mode: "Calibrating",
+      title: "Estimating mu and sigma from the observed path.",
+      text: "The demo MLP is peering at synthetic path behavior and pretending it is wiser than it probably is."
+    },
+    {
+      mode: "Solving",
+      title: "Solving the PDE anchor.",
+      text: "A toy fair-value surface is being stitched together before the stochastic futures get loud."
+    },
+    {
+      mode: "Simulating",
+      title: "Running Euler-Maruyama futures and graph correlation.",
+      text: `Projecting weather paths, averaging terminal prices, and pulling back the top ${pricerState.correlatedCount} correlated markets.`
+    }
+  ];
+
+  stages.forEach((stage, index) => {
+    window.setTimeout(() => {
+      if (pricerState.runId !== runId) return;
+      pricerState.phaseIndex = index;
+      setPricerStatus(stage.mode, stage.title, stage.text, true);
+      renderPricerPhaseList(index, false);
+    }, index * 700);
+  });
+
+  window.setTimeout(() => {
+    if (pricerState.runId !== runId) return;
+    pricerState.loading = false;
+    pricerState.result = simulatePricerResult(market, pricerState.keyword, pricerState.correlatedCount);
+    renderPricerSummary(pricerState.result);
+    renderPricerCorrelatedMarkets(pricerState.result);
+    drawPricerPathChart(pricerState.result);
+    renderPricerPhaseList(pricerPhaseText.length - 1, true);
+    setPricerStatus(
+      "Ready",
+      `${market.ticker} demo fair value: ${formatCents(pricerState.result.predictedPrice)}.`,
+      `95% CI ${formatCents(pricerState.result.confidenceInterval[0])} to ${formatCents(pricerState.result.confidenceInterval[1])}. Top ${pricerState.correlatedCount} correlated weather markets are now below.`,
+      false
+    );
+    syncPricerControls();
+  }, stages.length * 700 + 260);
+}
+
+function initPricer() {
+  if (!pricerKeywordInput || !pricerSearchButton || !pricerRunButton) return;
+
+  if (pricerCorrelationOutput && pricerCorrelationInput) {
+    pricerCorrelationOutput.textContent = pricerCorrelationInput.value;
+  }
+  renderPricerSummary(null);
+  renderPricerCorrelatedMarkets(null);
+  drawPricerPathChart(null);
+  renderPricerPhaseList(0, false);
+  setPricerStatus(
+    "Idle",
+    "Waiting for a weather keyword.",
+    "Start with rain, snow, heat, wind, temperature, Detroit, Chicago, or New York.",
+    false
+  );
+  syncPricerControls();
+  initPricerNetwork();
+
+  pricerSearchButton.addEventListener("click", () => {
+    executePricerSearch(pricerKeywordInput.value);
+  });
+
+  pricerKeywordInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      executePricerSearch(pricerKeywordInput.value);
+    }
+  });
+
+  pricerKeywordChips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const keyword = chip.dataset.keywordChip || "";
+      pricerKeywordInput.value = keyword;
+      executePricerSearch(keyword);
+    });
+  });
+
+  pricerCorrelationInput?.addEventListener("input", () => {
+    pricerState.correlatedCount = Number(pricerCorrelationInput.value);
+    if (pricerCorrelationOutput) {
+      pricerCorrelationOutput.textContent = pricerCorrelationInput.value;
+    }
+    if (pricerState.result) {
+      const market = getSelectedPricerMarket();
+      if (market) {
+        pricerState.result.correlatedMarkets = findCorrelatedMarkets(market, pricerState.correlatedCount);
+        renderPricerCorrelatedMarkets(pricerState.result);
+      }
+    } else {
+      renderPricerCorrelatedMarkets(null);
+    }
+  });
+
+  pricerRunButton.addEventListener("click", () => {
+    runPricerDemo();
+  });
+
+  window.addEventListener("resize", () => {
+    drawPricerPathChart(pricerState.result);
+  });
+}
+
 function initApp() {
   menuToggle?.addEventListener("click", () => {
     if (!mobileNav) return;
@@ -471,6 +1584,7 @@ function initApp() {
   initReveal();
   initNavTracking();
   initChart();
+  initPricer();
 }
 
 initApp();

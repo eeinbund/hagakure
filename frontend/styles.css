@@ -315,7 +315,9 @@ main {
 .button:hover,
 .team-card:hover,
 .about-card:hover,
-.role-card:hover {
+.role-card:hover,
+.pricer-market-item:hover,
+.pricer-chip:hover {
   transform: translateY(-2px);
 }
 
@@ -345,7 +347,12 @@ main {
 .team-detail,
 .role-card,
 .role-detail,
-.contact-form {
+.contact-form,
+.pricer-card,
+.pricer-network-panel,
+.pricer-market-panel,
+.pricer-results-panel,
+.pricer-correlated-panel {
   background: linear-gradient(180deg, rgba(19, 16, 17, 0.94), rgba(12, 11, 11, 0.94));
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
@@ -508,6 +515,14 @@ main {
   font-size: clamp(2.2rem, 5vw, 4rem);
 }
 
+.section-subcopy {
+  max-width: 46rem;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  line-height: 1.75;
+  font-size: 1.02rem;
+}
+
 .section-split {
   display: grid;
   gap: 2rem;
@@ -546,7 +561,8 @@ main {
 .strategy-shell,
 .workflow-layout,
 .careers-shell,
-.section-contact {
+.section-contact,
+.pricer-shell {
   display: grid;
   grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
   gap: 1rem;
@@ -585,9 +601,398 @@ main {
 .workflow-panel,
 .role-detail,
 .contact-form,
-.team-detail {
+.team-detail,
+.pricer-network-panel,
+.pricer-market-panel,
+.pricer-results-panel,
+.pricer-correlated-panel {
   border-radius: var(--radius-xl);
   padding: 1.6rem;
+}
+
+.pricer-controls,
+.pricer-stage {
+  display: grid;
+  gap: 1rem;
+}
+
+.pricer-card {
+  border-radius: var(--radius-xl);
+  padding: 1.45rem;
+}
+
+.pricer-card-kicker,
+.pricer-summary-kicker,
+.pricer-market-city {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.76rem;
+}
+
+.pricer-card h3,
+.pricer-overlay h3 {
+  margin: 0.6rem 0 0;
+}
+
+.pricer-card h3 {
+  font-family: var(--display);
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+.pricer-field {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1rem;
+  color: var(--muted);
+}
+
+.pricer-field input,
+.pricer-slider-row input[type="range"] {
+  width: 100%;
+}
+
+.pricer-field input {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 0.95rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+}
+
+.pricer-field input:focus {
+  outline: none;
+  border-color: rgba(255, 70, 83, 0.45);
+  box-shadow: 0 0 0 4px rgba(202, 27, 40, 0.15);
+}
+
+.pricer-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0 1.1rem;
+}
+
+.pricer-chip {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  padding: 0.65rem 0.95rem;
+  transition: transform var(--transition), border-color var(--transition), background var(--transition), color var(--transition);
+}
+
+.pricer-chip:disabled,
+.pricer-market-item:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.pricer-slider-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.pricer-slider-row strong {
+  min-width: 2.6rem;
+  text-align: center;
+  font-family: var(--display);
+  font-size: 1.35rem;
+}
+
+.pricer-slider-row input[type="range"] {
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 70, 83, 0.82), rgba(255, 255, 255, 0.18));
+}
+
+.pricer-slider-row input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #ff4653;
+  box-shadow: 0 0 0 4px rgba(202, 27, 40, 0.2);
+}
+
+.pricer-slider-row input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #ff4653;
+  box-shadow: 0 0 0 4px rgba(202, 27, 40, 0.2);
+}
+
+.pricer-helper {
+  color: var(--muted);
+  line-height: 1.72;
+  margin: 0.9rem 0 1.2rem;
+}
+
+.pricer-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.pricer-mode,
+.pricer-inline-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+.pricer-mode {
+  padding: 0.35rem 0.7rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--accent-strong);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pricer-network-frame {
+  position: relative;
+  overflow: hidden;
+  min-height: 22rem;
+  margin-top: 1rem;
+  border-radius: calc(var(--radius-xl) - 0.3rem);
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 70, 83, 0.14), transparent 24%),
+    radial-gradient(circle at 82% 22%, rgba(244, 239, 232, 0.06), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
+    #0a0809;
+}
+
+.pricer-network-frame::before {
+  content: "";
+  position: absolute;
+  inset: -35%;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 70, 83, 0.18), transparent 70%);
+  opacity: 0;
+  transform: translateX(-40%);
+  transition: opacity var(--transition);
+}
+
+.pricer-network-frame.is-loading::before {
+  opacity: 1;
+  animation: pricer-sweep 1.8s linear infinite;
+}
+
+#pricer-network {
+  width: 100%;
+  height: 100%;
+  min-height: 22rem;
+}
+
+.pricer-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  padding: 1.45rem;
+  background: linear-gradient(180deg, rgba(6, 6, 6, 0.04), rgba(6, 6, 6, 0.42) 58%, rgba(6, 6, 6, 0.84));
+  pointer-events: none;
+}
+
+.pricer-warning {
+  max-width: 42rem;
+  margin: 0;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid rgba(255, 70, 83, 0.32);
+  border-radius: 999px;
+  background: rgba(202, 27, 40, 0.16);
+  color: #ff8b95;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.76rem;
+}
+
+.pricer-overlay h3 {
+  max-width: 14ch;
+  font-family: var(--serif);
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  line-height: 0.98;
+}
+
+.pricer-overlay p {
+  max-width: 44rem;
+  margin: 0;
+  color: rgba(244, 239, 232, 0.75);
+  line-height: 1.72;
+}
+
+.pricer-phase-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding: 0;
+  margin: 1rem 0 0;
+  list-style: none;
+}
+
+.pricer-phase-list li {
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.pricer-phase-list li.is-active {
+  border-color: rgba(255, 70, 83, 0.35);
+  background: linear-gradient(180deg, rgba(202, 27, 40, 0.2), rgba(202, 27, 40, 0.08));
+  color: var(--text);
+}
+
+.pricer-phase-list li.is-complete {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(244, 239, 232, 0.9);
+}
+
+.pricer-data-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 1rem;
+}
+
+.pricer-market-list,
+.pricer-correlation-list {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.pricer-market-item,
+.pricer-correlation-item,
+.pricer-summary-card,
+.pricer-empty {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.pricer-market-item {
+  padding: 1rem;
+  color: inherit;
+  text-align: left;
+  transition: transform var(--transition), border-color var(--transition), background var(--transition);
+}
+
+.pricer-market-item.is-active {
+  border-color: rgba(255, 70, 83, 0.34);
+  background: linear-gradient(180deg, rgba(202, 27, 40, 0.18), rgba(255, 255, 255, 0.03));
+}
+
+.pricer-market-top,
+.pricer-market-meta,
+.pricer-correlation-item {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pricer-market-top h3,
+.pricer-correlation-copy strong {
+  margin: 0.35rem 0 0;
+  font-family: var(--display);
+  font-size: 1.02rem;
+  line-height: 1.45;
+}
+
+.pricer-market-item p,
+.pricer-correlation-copy p,
+.pricer-summary-card p,
+.pricer-empty {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.pricer-market-item p {
+  margin: 0.8rem 0;
+}
+
+.pricer-market-meta {
+  flex-wrap: wrap;
+  font-size: 0.84rem;
+  color: rgba(244, 239, 232, 0.72);
+}
+
+.pricer-inline-pill {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: 0.78rem;
+}
+
+.pricer-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.pricer-summary-card,
+.pricer-empty,
+.pricer-correlation-item {
+  padding: 1rem;
+}
+
+.pricer-summary-card strong {
+  display: block;
+  margin-top: 0.45rem;
+  font-family: var(--display);
+  font-size: 1.34rem;
+  line-height: 1.2;
+}
+
+#pricer-path-chart {
+  width: 100%;
+  height: 16rem;
+  margin-top: 1rem;
+  border-radius: calc(var(--radius-lg) - 0.2rem);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+}
+
+.pricer-correlation-item {
+  align-items: center;
+}
+
+.pricer-correlation-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--accent-strong);
+  font-family: var(--display);
+}
+
+.pricer-correlation-copy {
+  flex: 1;
+}
+
+.pricer-correlation-copy p {
+  margin: 0.35rem 0 0;
 }
 
 .strategy-panel {
@@ -791,7 +1196,9 @@ main {
   .workflow-layout,
   .careers-shell,
   .section-contact,
-  .strategy-panel {
+  .strategy-panel,
+  .pricer-shell,
+  .pricer-data-grid {
     grid-template-columns: 1fr;
   }
 
@@ -806,6 +1213,10 @@ main {
 
   .role-grid {
     grid-template-columns: 1fr;
+  }
+
+  .pricer-phase-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -834,11 +1245,41 @@ main {
   .role-card,
   .role-detail,
   .contact-form,
-  .about-card {
+  .about-card,
+  .pricer-card,
+  .pricer-network-panel,
+  .pricer-market-panel,
+  .pricer-results-panel,
+  .pricer-correlated-panel {
     padding: 1.2rem;
   }
 
   .hero-metrics article {
     flex: 1 1 100%;
+  }
+
+  .pricer-summary-grid,
+  .pricer-phase-list {
+    grid-template-columns: 1fr;
+  }
+
+  .pricer-market-top,
+  .pricer-correlation-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pricer-overlay h3 {
+    max-width: 100%;
+  }
+}
+
+@keyframes pricer-sweep {
+  from {
+    transform: translateX(-42%) rotate(0deg);
+  }
+
+  to {
+    transform: translateX(42%) rotate(0deg);
   }
 }

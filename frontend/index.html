@@ -37,6 +37,7 @@
         <a href="#workflow">Workflow</a>
         <a href="#team">Team</a>
         <a href="#markets">Markets</a>
+        <a href="#pricer">Example Pricer</a>
       </nav>
 
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav">
@@ -50,6 +51,7 @@
       <a href="#workflow">Workflow</a>
       <a href="#team">Team</a>
       <a href="#markets">Markets</a>
+      <a href="#pricer">Example Pricer</a>
     </nav>
 
     <main id="top">
@@ -67,7 +69,7 @@
 
           <div class="hero-actions">
             <a class="button button-primary" href="#markets">View Market Focus</a>
-            <a class="button button-secondary" href="#strategy">View Strategy</a>
+            <a class="button button-secondary" href="#pricer">Try Example Pricer</a>
           </div>
 
           <div class="hero-metrics">
@@ -268,6 +270,122 @@
             <p>Choose a card to inspect how Hagakure thinks about Kalshi markets, execution, and risk.</p>
             <ul class="role-points"></ul>
           </article>
+        </div>
+      </section>
+
+      <section class="section" id="pricer">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Example Pricer</p>
+          <h2>A weather-only demo that walks through the full pricing ritual.</h2>
+          <p class="section-subcopy">
+            Type a keyword, pick a weather market, choose how many correlated contracts you want back,
+            and let the demo run a playful version of the notebook flow: MLP estimate, PDE anchor,
+            then Euler-Maruyama futures.
+          </p>
+        </div>
+
+        <div class="pricer-shell">
+          <aside class="pricer-controls reveal">
+            <article class="pricer-card">
+              <p class="pricer-card-kicker">Prompt 01</p>
+              <h3>What weather idea do you want to trade?</h3>
+              <label class="pricer-field" for="pricer-keyword">
+                Weather keyword
+                <input
+                  id="pricer-keyword"
+                  type="text"
+                  placeholder="rain, snow, heat, wind, Detroit..."
+                  autocomplete="off"
+                >
+              </label>
+
+              <div class="pricer-chip-row" aria-label="Suggested weather keywords">
+                <button class="pricer-chip" type="button" data-keyword-chip="rain">Rain</button>
+                <button class="pricer-chip" type="button" data-keyword-chip="snow">Snow</button>
+                <button class="pricer-chip" type="button" data-keyword-chip="heat">Heat</button>
+                <button class="pricer-chip" type="button" data-keyword-chip="wind">Wind</button>
+                <button class="pricer-chip" type="button" data-keyword-chip="Detroit">Detroit</button>
+                <button class="pricer-chip" type="button" data-keyword-chip="New York">New York</button>
+              </div>
+
+              <button class="button button-secondary" type="button" id="pricer-search">
+                Search Weather Markets
+              </button>
+            </article>
+
+            <article class="pricer-card">
+              <p class="pricer-card-kicker">Prompt 02</p>
+              <h3>How many correlated contracts should come back?</h3>
+              <div class="pricer-slider-row">
+                <input id="pricer-correlation-count" type="range" min="3" max="8" step="1" value="5">
+                <strong id="pricer-correlation-output">5</strong>
+              </div>
+              <p class="pricer-helper">
+                Weather only, by design. Pick a market first, then let the demo hallucinate responsibly.
+              </p>
+
+              <button class="button button-primary" type="button" id="pricer-run" disabled>
+                Price This Contract
+              </button>
+            </article>
+          </aside>
+
+          <div class="pricer-stage">
+            <article class="pricer-network-panel reveal">
+              <div class="pricer-panel-head">
+                <span>Weather Model Theater</span>
+                <span class="pricer-mode" id="pricer-mode-badge">Idle</span>
+              </div>
+
+              <div class="pricer-network-frame" id="pricer-network-frame">
+                <canvas id="pricer-network" width="840" height="360" aria-label="Animated market network"></canvas>
+                <div class="pricer-overlay">
+                  <p class="pricer-warning" id="pricer-warning" hidden>
+                    DO NOT TAKE THIS PRICE SERIOUSLY. THIS COULD BE OVERFIT GARBAGE
+                  </p>
+                  <h3 id="pricer-status-title">Waiting for a weather keyword.</h3>
+                  <p id="pricer-status-text">
+                    Start with rain, snow, heat, wind, temperature, Detroit, Chicago, or New York.
+                  </p>
+                </div>
+              </div>
+
+              <ol class="pricer-phase-list" id="pricer-phase-list">
+                <li class="is-active">Search weather markets from your keyword.</li>
+                <li>Estimate mu and sigma from the path.</li>
+                <li>Solve the PDE anchor and run Euler-Maruyama futures.</li>
+                <li>Return the most correlated weather contracts.</li>
+              </ol>
+            </article>
+
+            <div class="pricer-data-grid">
+              <article class="pricer-market-panel reveal">
+                <div class="pricer-panel-head">
+                  <span>Candidate Weather Markets</span>
+                  <span id="pricer-market-count">0 loaded</span>
+                </div>
+                <div class="pricer-market-list" id="pricer-market-list"></div>
+              </article>
+
+              <article class="pricer-results-panel reveal">
+                <div class="pricer-panel-head">
+                  <span>Latest Demo Output</span>
+                  <span id="pricer-selected-label">No contract selected</span>
+                </div>
+
+                <div class="pricer-summary-grid" id="pricer-summary-grid"></div>
+                <canvas id="pricer-path-chart" width="560" height="250" aria-label="Observed and projected probability path"></canvas>
+              </article>
+            </div>
+
+            <article class="pricer-correlated-panel reveal">
+              <div class="pricer-panel-head">
+                <span>Most Correlated Weather Markets</span>
+                <span id="pricer-correlation-label">Top 5</span>
+              </div>
+              <div class="pricer-correlation-list" id="pricer-correlation-list"></div>
+            </article>
+          </div>
         </div>
       </section>
 
