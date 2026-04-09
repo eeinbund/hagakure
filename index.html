@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hagakure</title>
+  <meta
+    name="description"
+    content="Hagakure is a systematic trading firm built on discipline, speed, and machine-assisted research."
+  >
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Serif+JP:wght@500;700&family=Sora:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <div class="ambient ambient-left"></div>
+    <div class="ambient ambient-right"></div>
+    <div class="grid-overlay"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Hagakure home">
+        <span class="brand-mark"></span>
+        <span class="brand-copy">
+          <span class="brand-name">Hagakure</span>
+          <span class="brand-tag">Systematic Trading</span>
+        </span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#strategy">Strategy</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#team">Team</a>
+        <a href="#careers">Careers</a>
+      </nav>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav">
+        Menu
+      </button>
+    </header>
+
+    <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile">
+      <a href="#about">About</a>
+      <a href="#strategy">Strategy</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#team">Team</a>
+      <a href="#careers">Careers</a>
+    </nav>
+
+    <main id="top">
+      <section class="hero section">
+        <div class="hero-copy reveal">
+          <p class="eyebrow">Hidden by leaves. Sharpened by discipline.</p>
+          <h1>
+            A black-and-crimson trading firm
+            <span>for fast markets and patient thinkers.</span>
+          </h1>
+          <p class="hero-text">
+            Hagakure brings together quantitative research, machine-assisted signal discovery,
+            and disciplined execution across global futures, FX, and index markets.
+          </p>
+
+          <div class="hero-actions">
+            <a class="button button-primary" href="#careers">Explore Roles</a>
+            <a class="button button-secondary" href="#strategy">View Strategy</a>
+          </div>
+
+          <div class="hero-metrics">
+            <article>
+              <span class="metric-value" data-counter="24">0</span>
+              <span class="metric-label">Research cycles per day</span>
+            </article>
+            <article>
+              <span class="metric-value" data-counter="4">0</span>
+              <span class="metric-label">Core market verticals</span>
+            </article>
+            <article>
+              <span class="metric-value" data-counter="99">0</span>
+              <span class="metric-label">Execution health score</span>
+            </article>
+          </div>
+        </div>
+
+        <div class="hero-panel reveal">
+          <div class="panel panel-lead">
+            <div class="panel-header">
+              <span>Command Canvas</span>
+              <span class="status-dot">Live</span>
+            </div>
+            <div class="panel-art">
+              <div class="sun-disc"></div>
+              <div class="blade-line blade-line-a"></div>
+              <div class="blade-line blade-line-b"></div>
+              <div class="signal-grid">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+            <div class="signal-strip">
+              <span>Research</span>
+              <span>Risk</span>
+              <span>Execution</span>
+              <span>Review</span>
+            </div>
+          </div>
+
+          <div class="panel panel-ticker">
+            <div class="ticker-header">
+              <span>Market Pulse</span>
+              <span class="ticker-mode">Adaptive</span>
+            </div>
+            <canvas id="pulse-chart" width="420" height="180" aria-label="Market pulse chart"></canvas>
+            <div class="pulse-stats">
+              <div>
+                <span class="pulse-label">Signal readiness</span>
+                <strong id="signal-readiness">91.4%</strong>
+              </div>
+              <div>
+                <span class="pulse-label">Latency budget</span>
+                <strong id="latency-budget">3.8 ms</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-split" id="about">
+        <div class="section-heading reveal">
+          <p class="eyebrow">About Hagakure</p>
+          <h2>Systematic, exacting, and built to stay calm under pressure.</h2>
+        </div>
+
+        <div class="about-grid">
+          <article class="about-card reveal">
+            <span class="card-index">01</span>
+            <h3>Firm profile</h3>
+            <p>
+              Hagakure is a multi-asset systematic trading firm built around signal research,
+              rapid implementation, and a culture of constant refinement.
+            </p>
+          </article>
+          <article class="about-card reveal">
+            <span class="card-index">02</span>
+            <h3>Operating principle</h3>
+            <p>
+              We combine machine-guided feature generation with human judgement, keeping our process
+              transparent, testable, and tightly risk-controlled.
+            </p>
+          </article>
+          <article class="about-card reveal">
+            <span class="card-index">03</span>
+            <h3>Where we focus</h3>
+            <p>
+              Futures, foreign exchange, liquid indices, and cross-asset dislocations that reward
+              discipline more than noise.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="strategy">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Strategy</p>
+          <h2>Every idea is tested like steel before it ever touches the market.</h2>
+        </div>
+
+        <div class="strategy-shell">
+          <aside class="strategy-tabs reveal" aria-label="Strategy pillars">
+            <button class="strategy-tab is-active" type="button" data-strategy="research">Research Engine</button>
+            <button class="strategy-tab" type="button" data-strategy="risk">Risk Discipline</button>
+            <button class="strategy-tab" type="button" data-strategy="execution">Execution Stack</button>
+          </aside>
+
+          <div class="strategy-panel reveal">
+            <div class="strategy-copy">
+              <p class="strategy-kicker" id="strategy-kicker">Research Engine</p>
+              <h3 id="strategy-title">Machine-assisted research that still respects first principles.</h3>
+              <p id="strategy-text">
+                Our research workflow explores signals across multiple horizons, then forces them through
+                adversarial validation, regime checks, and implementation review.
+              </p>
+            </div>
+
+            <div class="strategy-matrix" id="strategy-matrix"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="workflow">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Workflow</p>
+          <h2>A repeatable path from faint signal to live conviction.</h2>
+        </div>
+
+        <div class="workflow-layout">
+          <div class="workflow-track reveal">
+            <button class="workflow-step is-active" type="button" data-step="observe">
+              <span>01</span>
+              <strong>Observe</strong>
+            </button>
+            <button class="workflow-step" type="button" data-step="shape">
+              <span>02</span>
+              <strong>Shape</strong>
+            </button>
+            <button class="workflow-step" type="button" data-step="deploy">
+              <span>03</span>
+              <strong>Deploy</strong>
+            </button>
+            <button class="workflow-step" type="button" data-step="refine">
+              <span>04</span>
+              <strong>Refine</strong>
+            </button>
+          </div>
+
+          <article class="workflow-panel reveal">
+            <p class="workflow-label" id="workflow-label">Observe</p>
+            <h3 id="workflow-title">Collect, clean, and challenge market structure data.</h3>
+            <p id="workflow-text">
+              Every cycle begins with high-quality market, venue, and derived data. We look for repeatable
+              structure, not stories we merely want to believe.
+            </p>
+            <ul class="workflow-list" id="workflow-list"></ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="team">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Team</p>
+          <h2>Built like a small war room, not a crowded hierarchy.</h2>
+        </div>
+
+        <div class="team-grid reveal" id="team-grid"></div>
+
+        <div class="team-detail reveal" id="team-detail">
+          <p class="team-detail-role">Founder / CIO</p>
+          <h3>Loading team profile...</h3>
+          <p>Hagakure leadership details will appear here once the page initializes.</p>
+        </div>
+      </section>
+
+      <section class="section" id="careers">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Careers</p>
+          <h2>Responsibility early. Mentorship daily. Standards that stay high.</h2>
+        </div>
+
+        <div class="careers-shell">
+          <div class="role-filters reveal" aria-label="Role filters">
+            <button class="role-filter is-active" type="button" data-role-filter="all">All Roles</button>
+            <button class="role-filter" type="button" data-role-filter="quant">Quant</button>
+            <button class="role-filter" type="button" data-role-filter="engineering">Engineering</button>
+            <button class="role-filter" type="button" data-role-filter="trading">Trading</button>
+          </div>
+
+          <div class="role-grid reveal" id="role-grid"></div>
+
+          <article class="role-detail reveal" id="role-detail">
+            <p class="role-detail-kicker">Select a role</p>
+            <h3>Market Data Engineer</h3>
+            <p>Choose a role card to inspect the mandate, what success looks like, and the tools we care about.</p>
+            <ul class="role-points"></ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section-contact">
+        <div class="contact-copy reveal">
+          <p class="eyebrow">Contact</p>
+          <h2>Build a firm that moves with calm force.</h2>
+          <p>
+            Whether you are a researcher, developer, or trader, Hagakure looks for people who can move quickly
+            without sacrificing judgement.
+          </p>
+          <div class="contact-lines">
+            <a href="mailto:careers@hagakure.capital">careers@hagakure.capital</a>
+            <span>New York · Chicago · Singapore</span>
+          </div>
+        </div>
+
+        <form class="contact-form reveal" id="contact-form">
+          <label>
+            Name
+            <input type="text" name="name" placeholder="Your name" required>
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" placeholder="you@example.com" required>
+          </label>
+          <label>
+            Interest
+            <select name="interest" required>
+              <option value="">Select one</option>
+              <option value="quant">Quant Research</option>
+              <option value="engineering">Engineering</option>
+              <option value="trading">Trading</option>
+            </select>
+          </label>
+          <label>
+            Why Hagakure
+            <textarea name="message" rows="4" placeholder="Tell us what kind of problems you want to solve." required></textarea>
+          </label>
+          <button class="button button-primary" type="submit">Send Interest</button>
+          <p class="form-response" id="form-response" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
