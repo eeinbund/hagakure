@@ -1,0 +1,13 @@
+*
+!.gitignore
+!.github/
+!.github/workflows/
+!.github/workflows/deploy-pages.yml
+!README.md
+!frontend/
+!frontend/**
+
+**/.DS_Store
+**/__pycache__/
+**/*.pyc
+**/.ipynb_checkpoints/
