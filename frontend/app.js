@@ -177,7 +177,6 @@ const pricerState = {
 const navLinks = document.querySelectorAll(".desktop-nav a, .mobile-nav a");
 const menuToggle = document.querySelector(".menu-toggle");
 const mobileNav = document.querySelector(".mobile-nav");
-const counterNodes = document.querySelectorAll("[data-counter]");
 const strategyTabs = document.querySelectorAll(".strategy-tab");
 const strategyKicker = document.getElementById("strategy-kicker");
 const strategyTitle = document.getElementById("strategy-title");
@@ -431,35 +430,6 @@ function renderRoles(filter = "all", activeIndex = 0) {
   });
 }
 
-function initCounters() {
-  const observer = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-
-        const node = entry.target;
-        const target = Number(node.dataset.counter);
-        const duration = 1200;
-        const start = performance.now();
-
-        function tick(now) {
-          const progress = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          node.textContent = target === 99 ? `${Math.round(target * eased)}%` : Math.round(target * eased);
-          if (progress < 1) {
-            requestAnimationFrame(tick);
-          }
-        }
-
-        requestAnimationFrame(tick);
-        obs.unobserve(node);
-      });
-    },
-    { threshold: 0.5 }
-  );
-
-  counterNodes.forEach((node) => observer.observe(node));
-}
 
 function initReveal() {
   const revealNodes = document.querySelectorAll(".reveal");
@@ -1411,7 +1381,6 @@ function initApp() {
   renderWorkflow("observe");
   renderTeam(0);
   renderRoles("all", 0);
-  initCounters();
   initReveal();
   initNavTracking();
   initChart();

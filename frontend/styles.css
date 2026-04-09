@@ -171,7 +171,6 @@ button {
 .signal-strip,
 .contact-lines,
 .workflow-track,
-.hero-metrics,
 .team-grid,
 .about-grid {
   display: flex;
@@ -332,13 +331,28 @@ main {
   background: rgba(255, 255, 255, 0.03);
 }
 
-.hero-metrics {
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-top: 2.4rem;
+.hero-quote {
+  margin: 2.4rem 0 0;
+  padding: 0;
+  border: none;
 }
 
-.hero-metrics article,
+.hero-quote p {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(244, 239, 232, 0.72);
+  font-style: italic;
+  margin: 0 0 0.5rem;
+}
+
+.hero-quote cite {
+  font-size: 0.8rem;
+  font-style: normal;
+  color: rgba(244, 239, 232, 0.38);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .panel,
 .about-card,
 .strategy-panel,
@@ -347,7 +361,6 @@ main {
 .team-detail,
 .role-card,
 .role-detail,
-.contact-form,
 .pricer-card,
 .pricer-network-panel,
 .pricer-market-panel,
@@ -356,12 +369,6 @@ main {
   background: linear-gradient(180deg, rgba(19, 16, 17, 0.94), rgba(12, 11, 11, 0.94));
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
-}
-
-.hero-metrics article {
-  min-width: 11rem;
-  padding: 1rem 1.1rem;
-  border-radius: var(--radius-md);
 }
 
 .metric-value {
@@ -1254,9 +1261,6 @@ main {
     padding: 1.2rem;
   }
 
-  .hero-metrics article {
-    flex: 1 1 100%;
-  }
 
   .pricer-summary-grid,
   .pricer-phase-list {
