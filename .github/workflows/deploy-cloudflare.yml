@@ -34,7 +34,3 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: deploy
-
-      - name: Print deployment URL
-        if: ${{ steps.deploy.outputs.deployment-url != '' }}
-        run: echo "Deployment URL: ${{ steps.deploy.outputs.deployment-url }}"
