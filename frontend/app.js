@@ -1282,14 +1282,24 @@ async function loadLiveMarkets() {
   try {
     const resp = await fetch("/api/weather-markets");
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    weatherMarketCatalog = await resp.json();
+    const data = await resp.json();
+    weatherMarketCatalog = Array.isArray(data) ? data : [];
     pricerState.marketsLoading = false;
-    setPricerStatus(
-      "Idle",
-      `${weatherMarketCatalog.length} live Kalshi weather markets loaded.`,
-      "Start with rain, snow, heat, wind, temperature, Detroit, Chicago, or New York.",
-      false
-    );
+    if (weatherMarketCatalog.length > 0) {
+      setPricerStatus(
+        "Idle",
+        `${weatherMarketCatalog.length} live Kalshi weather markets loaded.`,
+        "Start with rain, snow, heat, wind, temperature, Detroit, Chicago, or New York.",
+        false
+      );
+    } else {
+      setPricerStatus(
+        "Idle",
+        "No open weather markets right now.",
+        "Kalshi weather markets open daily. Check back soon or try a broader keyword.",
+        false
+      );
+    }
   } catch {
     pricerState.marketsLoading = false;
     setPricerStatus(
