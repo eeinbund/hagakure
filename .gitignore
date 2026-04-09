@@ -10,6 +10,7 @@
 !frontend/**
 !src/
 !src/**
+!kalshi_utils.py
 
 **/.DS_Store
 **/__pycache__/

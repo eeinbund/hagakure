@@ -1,71 +1,46 @@
 const KALSHI_BASE = 'https://api.elections.kalshi.com/trade-api/v2';
 
-// Curated list of Kalshi weather series with recurring open markets.
-// Hardcoded to avoid series-discovery subrequests — Cloudflare Workers
-// caps each invocation at 50 subrequests, so we keep this list ≤ 49.
+// 25 series = 25 subrequests — well under Cloudflare's 50-per-invocation cap.
+// We fetch all 25 in parallel, then sort by 24-hour volume and return the
+// top 40 most liquid markets for the website pricer.
 const WEATHER_SERIES = [
   // High temperature
-  'KXHIGHTBOS',  // Boston max temp daily
-  'KXHIGHTPHX',  // Phoenix max temp daily
-  'KXHIGHTLV',   // Las Vegas max temp daily
-  'KXHIGHTOKC',  // Oklahoma City max temp daily
-  'KXHIGHTSEA',  // Seattle max temp daily
-  'KXHIGHTSFO',  // San Francisco max temp daily
-  'KXHIGHTCHI',  // Chicago max temp daily (new-style)
-  'KXHIGHCHI',   // Chicago max temp daily (legacy)
-  'KXHIGHLAX',   // Los Angeles max temp daily
-  'KXHIGHNY',    // New York max temp daily
-  'KXHIGHNY0',   // New York max temp daily (alt)
-  'KXHIGHMIA',   // Miami max temp daily
-  'KXHIGHTATL',  // Atlanta max temp daily
-  'KXHIGHTHOU',  // Houston max temp daily
-  'KXHIGHTDAL',  // Dallas max temp daily
-  'KXHIGHTDC',   // DC max temp daily
-  'KXHIGHTMIN',  // Minneapolis max temp daily
-  'KXHIGHTNOLA', // New Orleans max temp daily
-  'KXHIGHTPHIL', // Philadelphia max temp daily
+  'KXHIGHLAX',   // Los Angeles max temp
+  'KXHIGHTBOS',  // Boston max temp
+  'KXHIGHTPHX',  // Phoenix max temp
+  'KXHIGHTSFO',  // San Francisco max temp
+  'KXHIGHTCHI',  // Chicago max temp (new-style)
+  'KXHIGHCHI',   // Chicago max temp (legacy)
+  'KXHIGHTLV',   // Las Vegas max temp
+  'KXHIGHNY',    // New York max temp
+  'KXHIGHTATL',  // Atlanta max temp
+  'KXHIGHTSEA',  // Seattle max temp
   // Low temperature
-  'KXLOWTNYC',   // NYC min temp daily
-  'KXLOWTCHI',   // Chicago min temp daily
-  'KXLOWTSFO',   // San Francisco min temp daily
-  'KXLOWTSEA',   // Seattle min temp daily
-  'KXLOWTDAL',   // Dallas min temp daily
-  'KXLOWTDC',    // DC min temp daily
-  'KXLOWTMIN',   // Minneapolis min temp daily
-  'KXLOWTDEN',   // Denver min temp daily
-  'KXLOWTLV',    // Las Vegas min temp daily
-  'KXLOWTATL',   // Atlanta min temp daily
-  'KXLOWTNOLA',  // New Orleans min temp daily
-  'KXLOWTHOU',   // Houston min temp daily
-  'KXLOWTLAX',   // Los Angeles min temp daily
-  'KXLOWTBOS',   // Boston min temp daily
-  'KXLOWTPHX',   // Phoenix min temp daily
-  'KXLOWTMIA',   // Miami min temp daily
-  // Rain (monthly)
-  'KXRAINNYCM',  // NYC monthly rain
-  'KXRAINCHIM',  // Chicago monthly rain
-  'KXRAINMIAM',  // Miami monthly rain
+  'KXLOWTNYC',   // New York min temp
+  'KXLOWTSFO',   // San Francisco min temp
+  'KXLOWTSEA',   // Seattle min temp
+  'KXLOWTDAL',   // Dallas min temp
+  'KXLOWTDC',    // Washington DC min temp
+  'KXLOWTMIN',   // Minneapolis min temp
+  'KXLOWTDEN',   // Denver min temp
+  'KXLOWTLV',    // Las Vegas min temp
+  'KXLOWTATL',   // Atlanta min temp
+  'KXLOWTNOLA',  // New Orleans min temp
+  // Monthly rain
   'KXRAINHOUM',  // Houston monthly rain
-  'KXRAINLAXM',  // LA monthly rain
-  'KXRAINSEAM',  // Seattle monthly rain
-  'KXRAINSFOM',  // SF monthly rain
   'KXRAINDENM',  // Denver monthly rain
-  'KXRAINDALM',  // Dallas monthly rain
-  // Snow (monthly)
-  'KXNYCSNOWM',  // NYC monthly snow
+  'KXRAINNYCM',  // New York monthly rain
+  // Monthly snow
+  'KXNYCSNOWM',  // New York monthly snow
   'KXCHISNOWM',  // Chicago monthly snow
-  'KXBOSSNOWM',  // Boston monthly snow
-  'KXDENSNOWM',  // Denver monthly snow
-  'KXDETSNOWM',  // Detroit monthly snow
 ];
 
-// Map a series ticker to {city, region, event} for the frontend pricer.
-// Returns null for unmapped series (markets will be dropped).
+const SITE_MARKET_LIMIT = 40;
+
 function getSeriesMeta(seriesTicker) {
   const t = (seriesTicker || '').toUpperCase();
   const pairs = [
-    // ── High / Low Temperature ────────────────────────────────────────────────
-    [/KXHIGHT?(NYC|NY0?|HIGHNY0?)|KXLOWT?(NYC|NY0?)|KXHIGHNY0?|KXLOWNY/, { city: 'New York', region: 'New York', event: 'Temperature' }],
+    [/KXHIGHT?(NYC|NY0?)|KXLOWT?(NYC|NY0?)|KXHIGHNY0?|KXLOWNY/, { city: 'New York', region: 'New York', event: 'Temperature' }],
     [/KXHIGHCHI|KXLOWCHI|KXHIGHT(CHI)|KXLOWT(CHI)/, { city: 'Chicago', region: 'Illinois', event: 'Temperature' }],
     [/KXHIGHLAX|KXLOWLAX|KXHIGHT(LAX)|KXLOWT(LAX)/, { city: 'Los Angeles', region: 'California', event: 'Temperature' }],
     [/KXHIGHT(BOS)|KXLOWT(BOS)/, { city: 'Boston', region: 'Massachusetts', event: 'Temperature' }],
@@ -85,7 +60,6 @@ function getSeriesMeta(seriesTicker) {
     [/KXHIGHT(SFO)|KXLOWT(SFO)/, { city: 'San Francisco', region: 'California', event: 'Temperature' }],
     [/KXHIGHPHIL|KXLOWPHIL|KXPHILHIGH|KXHIGHT(PHIL)|KXLOWT(PHIL)/, { city: 'Philadelphia', region: 'Pennsylvania', event: 'Temperature' }],
     [/KXHIGHAUS|KXLOWAUS|KXHIGHT(AUS)|KXLOWT(AUS)/, { city: 'Austin', region: 'Texas', event: 'Temperature' }],
-    // ── Rain ──────────────────────────────────────────────────────────────────
     [/KXRAINNYCM?|KXRAINNY/, { city: 'New York', region: 'New York', event: 'Rain' }],
     [/KXRAINCHIM?/, { city: 'Chicago', region: 'Illinois', event: 'Rain' }],
     [/KXRAINDALM?/, { city: 'Dallas', region: 'Texas', event: 'Rain' }],
@@ -97,7 +71,6 @@ function getSeriesMeta(seriesTicker) {
     [/KXRAINDENM?/, { city: 'Denver', region: 'Colorado', event: 'Rain' }],
     [/KXRAINAUSM?/, { city: 'Austin', region: 'Texas', event: 'Rain' }],
     [/KXRAINNO(SB)?/, { city: 'New Orleans', region: 'Louisiana', event: 'Rain' }],
-    // ── Snow ──────────────────────────────────────────────────────────────────
     [/KXNYCSNOW(M|XMAS)?|KXSNOW(NYC|NY)(M|XMAS)?/, { city: 'New York', region: 'New York', event: 'Snow' }],
     [/KXCHISNOW(M|XMAS)?|KXSNOWCHIM?/, { city: 'Chicago', region: 'Illinois', event: 'Snow' }],
     [/KXBOSSNOW(M|XMAS)?/, { city: 'Boston', region: 'Massachusetts', event: 'Snow' }],
@@ -113,16 +86,18 @@ function getSeriesMeta(seriesTicker) {
   return null;
 }
 
-function mapMarketToFrontend(market) {
-  const seriesTicker = market._seriesTicker || '';
-  const meta = getSeriesMeta(seriesTicker);
+function mapMarket(market) {
+  const meta = getSeriesMeta(market._seriesTicker || '');
   if (!meta) return null;
 
   const yesBid = parseFloat(market.yes_bid_dollars) || 0;
   const yesAsk = parseFloat(market.yes_ask_dollars) || 0;
   const lastPrice = parseFloat(market.last_price_dollars) || 0;
   const currentPrice = lastPrice || (yesBid + yesAsk) / 2;
-  const volume = parseFloat(market.volume_24h_fp) || parseFloat(market.volume_fp) || 0;
+  const volume24h = parseFloat(market.volume_24h_fp) || 0;
+  const volume = parseFloat(market.volume_fp) || volume24h;
+
+  if (currentPrice <= 0) return null;
 
   const horizonHours = market.close_time
     ? Math.max(0.5, (new Date(market.close_time).getTime() - Date.now()) / 3_600_000)
@@ -135,11 +110,7 @@ function mapMarketToFrontend(market) {
     : 0.3;
 
   const cityWords = meta.city.toLowerCase().split(/\s+/);
-  const descriptors = [
-    ...cityWords,
-    meta.region.toLowerCase(),
-    meta.event.toLowerCase(),
-  ].filter((v, i, a) => a.indexOf(v) === i);
+  const descriptors = [...new Set([...cityWords, meta.region.toLowerCase(), meta.event.toLowerCase()])];
 
   return {
     ticker: market.ticker,
@@ -153,22 +124,25 @@ function mapMarketToFrontend(market) {
     yesAsk: Math.round(yesAsk * 10000) / 10000,
     lastPrice: Math.round(lastPrice * 10000) / 10000,
     volume: Math.round(volume),
+    volume24h: Math.round(volume24h),
     horizonHours: Math.round(horizonHours * 10) / 10,
     signalBias: 0,
     volatility: Math.round(volatility * 100) / 100,
   };
 }
 
-async function fetchWeatherMarkets() {
-  // Fetch all series in parallel — one subrequest per series, total ≤ 49.
+async function fetchTop40() {
+  // One subrequest per series, all in parallel.
   const results = await Promise.all(
-    WEATHER_SERIES.map(async (seriesTicker) => {
+    WEATHER_SERIES.map(async (ticker) => {
       try {
-        const url = `${KALSHI_BASE}/markets?series_ticker=${seriesTicker}&status=open&limit=200`;
-        const resp = await fetch(url, { headers: { Accept: 'application/json' } });
+        const resp = await fetch(
+          `${KALSHI_BASE}/markets?series_ticker=${ticker}&status=open&limit=200`,
+          { headers: { Accept: 'application/json' } }
+        );
         if (!resp.ok) return [];
         const data = await resp.json();
-        return (data.markets || []).map((m) => ({ ...m, _seriesTicker: seriesTicker }));
+        return (data.markets || []).map((m) => ({ ...m, _seriesTicker: ticker }));
       } catch {
         return [];
       }
@@ -177,9 +151,11 @@ async function fetchWeatherMarkets() {
 
   return results
     .flat()
-    .map(mapMarketToFrontend)
+    .map(mapMarket)
     .filter(Boolean)
-    .filter((m) => m.currentPrice > 0);
+    // Sort by 24-hour volume descending so the most active contracts come first
+    .sort((a, b) => b.volume24h - a.volume24h)
+    .slice(0, SITE_MARKET_LIMIT);
 }
 
 export default {
@@ -197,20 +173,17 @@ export default {
         });
       }
 
-      // Check cache
       const cache = caches.default;
       const cacheKey = new Request(`${url.origin}/api/weather-markets`);
-      let cached;
-      try { cached = await cache.match(cacheKey); } catch { cached = null; }
-      if (cached) return cached;
+      try {
+        const cached = await cache.match(cacheKey);
+        if (cached) return cached;
+      } catch { /* ignore cache errors */ }
 
       let markets = [];
       try {
-        markets = await fetchWeatherMarkets();
-      } catch {
-        // Return empty array rather than a 500 so the frontend shows a helpful message
-        markets = [];
-      }
+        markets = await fetchTop40();
+      } catch { /* return empty array; frontend handles it gracefully */ }
 
       const response = new Response(JSON.stringify(markets), {
         headers: {
