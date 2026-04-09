@@ -193,8 +193,6 @@ const teamDetail = document.getElementById("team-detail");
 const roleGrid = document.getElementById("role-grid");
 const roleDetail = document.getElementById("role-detail");
 const roleFilters = document.querySelectorAll(".role-filter");
-const contactForm = document.getElementById("contact-form");
-const formResponse = document.getElementById("form-response");
 const pricerKeywordInput = document.getElementById("pricer-keyword");
 const pricerSearchButton = document.getElementById("pricer-search");
 const pricerKeywordChips = document.querySelectorAll("[data-keyword-chip]");
@@ -1408,19 +1406,6 @@ function initApp() {
     });
   });
 
-  contactForm?.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const formData = new FormData(contactForm);
-    const name = String(formData.get("name") || "").trim();
-    const interestField = contactForm.elements.namedItem("interest");
-    const interestLabel =
-      interestField instanceof HTMLSelectElement && interestField.selectedIndex >= 0
-        ? interestField.options[interestField.selectedIndex].text
-        : "message";
-
-    formResponse.textContent = `Thanks, ${name || "there"}. Your ${interestLabel.toLowerCase()} note has been received.`;
-    contactForm.reset();
-  });
 
   renderStrategy("research");
   renderWorkflow("observe");
