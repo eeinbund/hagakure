@@ -91,20 +91,12 @@ const teamData = [
       "Evan studied Mathematics, Statistics, and Business at the University of Michigan. He spent last summer interning at IMC Trading as a Research Analyst and is now pursuing a Master of Finance at the Massachusetts Institute of Technology."
   },
   {
-    role: "Head of Research",
-    name: "Mina Sato",
+    role: "Head of Lance",
+    name: "Lance Zhang",
     summary:
-      "Builds signal evaluation pipelines across macro, flow, and microstructure inputs.",
+      "Is Lance.",
     bio:
-      "Mina leads signal architecture across horizons and asset classes, translating ambiguous market behavior into testable ideas with clear implementation paths."
-  },
-  {
-    role: "Lead Systems Engineer",
-    name: "Daichi Mori",
-    summary:
-      "Owns market data reliability, execution performance, and production observability.",
-    bio:
-      "Daichi owns the reliability layer of the firm. His work spans market data integrity, execution observability, and the tooling that keeps traders calm when the tape gets loud."
+      "Lance doesn't actually do anything. The company felt as though by itself generates alpha."
   }
 ];
 
