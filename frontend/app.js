@@ -151,200 +151,9 @@ const roleData = [
   }
 ];
 
-const weatherMarketCatalog = [
-  {
-    ticker: "WX-DET-RAIN-001",
-    title: "Will Detroit officially record measurable rain by Friday close?",
-    city: "Detroit",
-    region: "Michigan",
-    event: "Rain",
-    descriptors: ["detroit", "rain", "precipitation", "michigan", "friday"],
-    currentPrice: 0.58,
-    yesBid: 0.57,
-    yesAsk: 0.60,
-    lastPrice: 0.59,
-    volume: 184000,
-    horizonHours: 22,
-    signalBias: 0.18,
-    volatility: 0.24
-  },
-  {
-    ticker: "WX-DET-SNOW-002",
-    title: "Will Detroit record at least 2 inches of snow this weekend?",
-    city: "Detroit",
-    region: "Michigan",
-    event: "Snow",
-    descriptors: ["detroit", "snow", "weekend", "michigan", "winter"],
-    currentPrice: 0.34,
-    yesBid: 0.32,
-    yesAsk: 0.36,
-    lastPrice: 0.33,
-    volume: 126500,
-    horizonHours: 41,
-    signalBias: -0.11,
-    volatility: 0.31
-  },
-  {
-    ticker: "WX-CHI-WIND-003",
-    title: "Will Chicago O'Hare see wind gusts above 25 mph by tonight?",
-    city: "Chicago",
-    region: "Illinois",
-    event: "Wind",
-    descriptors: ["chicago", "wind", "gusts", "illinois", "ohare"],
-    currentPrice: 0.63,
-    yesBid: 0.61,
-    yesAsk: 0.65,
-    lastPrice: 0.62,
-    volume: 162000,
-    horizonHours: 14,
-    signalBias: 0.23,
-    volatility: 0.28
-  },
-  {
-    ticker: "WX-CHI-RAIN-004",
-    title: "Will Chicago get at least 0.25 inches of rain tomorrow?",
-    city: "Chicago",
-    region: "Illinois",
-    event: "Rain",
-    descriptors: ["chicago", "rain", "precipitation", "illinois", "tomorrow"],
-    currentPrice: 0.46,
-    yesBid: 0.44,
-    yesAsk: 0.48,
-    lastPrice: 0.45,
-    volume: 148400,
-    horizonHours: 27,
-    signalBias: 0.07,
-    volatility: 0.27
-  },
-  {
-    ticker: "WX-NYC-SNOW-005",
-    title: "Will Central Park record at least 1 inch of snow tomorrow?",
-    city: "New York",
-    region: "New York",
-    event: "Snow",
-    descriptors: ["new york", "central park", "snow", "winter", "nyc"],
-    currentPrice: 0.41,
-    yesBid: 0.39,
-    yesAsk: 0.43,
-    lastPrice: 0.40,
-    volume: 209300,
-    horizonHours: 24,
-    signalBias: -0.04,
-    volatility: 0.33
-  },
-  {
-    ticker: "WX-NYC-HEAT-006",
-    title: "Will New York hit 85 degrees by Saturday afternoon?",
-    city: "New York",
-    region: "New York",
-    event: "Heat",
-    descriptors: ["new york", "temperature", "heat", "degrees", "nyc", "saturday"],
-    currentPrice: 0.52,
-    yesBid: 0.51,
-    yesAsk: 0.54,
-    lastPrice: 0.53,
-    volume: 173900,
-    horizonHours: 33,
-    signalBias: 0.12,
-    volatility: 0.22
-  },
-  {
-    ticker: "WX-PHX-HEAT-007",
-    title: "Will Phoenix hit 100 degrees this weekend?",
-    city: "Phoenix",
-    region: "Arizona",
-    event: "Heat",
-    descriptors: ["phoenix", "heat", "temperature", "arizona", "weekend"],
-    currentPrice: 0.72,
-    yesBid: 0.70,
-    yesAsk: 0.74,
-    lastPrice: 0.71,
-    volume: 155700,
-    horizonHours: 46,
-    signalBias: 0.29,
-    volatility: 0.19
-  },
-  {
-    ticker: "WX-DAL-STORM-008",
-    title: "Will Dallas log a severe thunderstorm warning tonight?",
-    city: "Dallas",
-    region: "Texas",
-    event: "Storm",
-    descriptors: ["dallas", "storm", "warning", "texas", "thunderstorm"],
-    currentPrice: 0.38,
-    yesBid: 0.36,
-    yesAsk: 0.40,
-    lastPrice: 0.39,
-    volume: 134100,
-    horizonHours: 12,
-    signalBias: -0.08,
-    volatility: 0.36
-  },
-  {
-    ticker: "WX-MIA-RAIN-009",
-    title: "Will Miami record afternoon rainfall tomorrow?",
-    city: "Miami",
-    region: "Florida",
-    event: "Rain",
-    descriptors: ["miami", "rain", "florida", "afternoon", "precipitation"],
-    currentPrice: 0.66,
-    yesBid: 0.64,
-    yesAsk: 0.68,
-    lastPrice: 0.65,
-    volume: 166800,
-    horizonHours: 19,
-    signalBias: 0.21,
-    volatility: 0.21
-  },
-  {
-    ticker: "WX-DEN-SNOW-010",
-    title: "Will Denver receive 4 inches of snow before Monday morning?",
-    city: "Denver",
-    region: "Colorado",
-    event: "Snow",
-    descriptors: ["denver", "snow", "colorado", "monday", "winter"],
-    currentPrice: 0.48,
-    yesBid: 0.46,
-    yesAsk: 0.50,
-    lastPrice: 0.47,
-    volume: 144600,
-    horizonHours: 54,
-    signalBias: 0.05,
-    volatility: 0.34
-  },
-  {
-    ticker: "WX-ATL-TEMP-011",
-    title: "Will Atlanta stay above 70 degrees overnight?",
-    city: "Atlanta",
-    region: "Georgia",
-    event: "Temperature",
-    descriptors: ["atlanta", "temperature", "overnight", "georgia", "degrees"],
-    currentPrice: 0.57,
-    yesBid: 0.56,
-    yesAsk: 0.59,
-    lastPrice: 0.58,
-    volume: 118200,
-    horizonHours: 15,
-    signalBias: 0.09,
-    volatility: 0.18
-  },
-  {
-    ticker: "WX-BOS-WIND-012",
-    title: "Will Boston Logan see sustained winds above 20 mph tomorrow?",
-    city: "Boston",
-    region: "Massachusetts",
-    event: "Wind",
-    descriptors: ["boston", "wind", "logan", "massachusetts", "tomorrow"],
-    currentPrice: 0.44,
-    yesBid: 0.42,
-    yesAsk: 0.46,
-    lastPrice: 0.45,
-    volume: 139800,
-    horizonHours: 29,
-    signalBias: -0.02,
-    volatility: 0.26
-  }
-];
+// Populated at runtime by loadLiveMarkets() from the Kalshi API via /api/weather-markets.
+// Do not add static entries here — all markets must come from live Kalshi data.
+let weatherMarketCatalog = [];
 
 const pricerPhaseText = [
   "Search weather markets from your keyword.",
@@ -360,6 +169,7 @@ const pricerState = {
   selectedTicker: "",
   result: null,
   loading: false,
+  marketsLoading: true,
   phaseIndex: 0,
   runId: 0
 };
@@ -944,15 +754,16 @@ function renderPricerPhaseList(activeIndex, complete = false) {
 
 function syncPricerControls() {
   const hasSelection = Boolean(getSelectedPricerMarket());
+  const blocked = pricerState.loading || pricerState.marketsLoading;
   if (pricerRunButton) {
-    pricerRunButton.disabled = pricerState.loading || !hasSelection;
+    pricerRunButton.disabled = blocked || !hasSelection;
     pricerRunButton.textContent = pricerState.loading ? "Pricing..." : "Price This Contract";
   }
-  if (pricerSearchButton) pricerSearchButton.disabled = pricerState.loading;
-  if (pricerKeywordInput) pricerKeywordInput.disabled = pricerState.loading;
-  if (pricerCorrelationInput) pricerCorrelationInput.disabled = pricerState.loading;
+  if (pricerSearchButton) pricerSearchButton.disabled = blocked;
+  if (pricerKeywordInput) pricerKeywordInput.disabled = blocked;
+  if (pricerCorrelationInput) pricerCorrelationInput.disabled = blocked;
   pricerKeywordChips.forEach((chip) => {
-    chip.disabled = pricerState.loading;
+    chip.disabled = blocked;
   });
 }
 
@@ -1467,6 +1278,30 @@ function runPricerDemo() {
   }, stages.length * 700 + 260);
 }
 
+async function loadLiveMarkets() {
+  try {
+    const resp = await fetch("/api/weather-markets");
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    weatherMarketCatalog = await resp.json();
+    pricerState.marketsLoading = false;
+    setPricerStatus(
+      "Idle",
+      `${weatherMarketCatalog.length} live Kalshi weather markets loaded.`,
+      "Start with rain, snow, heat, wind, temperature, Detroit, Chicago, or New York.",
+      false
+    );
+  } catch {
+    pricerState.marketsLoading = false;
+    setPricerStatus(
+      "Error",
+      "Could not load live market data.",
+      "The Kalshi API may be temporarily unavailable. Please refresh the page.",
+      false
+    );
+  }
+  syncPricerControls();
+}
+
 function initPricer() {
   if (!pricerKeywordInput || !pricerSearchButton || !pricerRunButton) return;
 
@@ -1478,13 +1313,14 @@ function initPricer() {
   drawPricerPathChart(null);
   renderPricerPhaseList(0, false);
   setPricerStatus(
-    "Idle",
-    "Waiting for a weather keyword.",
-    "Start with rain, snow, heat, wind, temperature, Detroit, Chicago, or New York.",
-    false
+    "Loading",
+    "Connecting to Kalshi live weather markets\u2026",
+    "Fetching live market data from Kalshi. This takes a few seconds.",
+    true
   );
   syncPricerControls();
   initPricerNetwork();
+  loadLiveMarkets();
 
   pricerSearchButton.addEventListener("click", () => {
     executePricerSearch(pricerKeywordInput.value);

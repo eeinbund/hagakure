@@ -8,6 +8,8 @@
 !wrangler.jsonc
 !frontend/
 !frontend/**
+!src/
+!src/**
 
 **/.DS_Store
 **/__pycache__/
