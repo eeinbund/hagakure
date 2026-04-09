@@ -1,0 +1,2 @@
+# hagakure
+"Open" source
