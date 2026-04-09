@@ -1,35 +1,35 @@
 const strategyData = {
   research: {
     kicker: "Research Engine",
-    title: "Machine-assisted research that still respects first principles.",
+    title: "Machine-assisted research tuned for event markets, not vague narratives.",
     text:
-      "Our research workflow explores signals across multiple horizons, then forces them through adversarial validation, regime checks, and implementation review.",
+      "We study Kalshi order books, contract specs, and catalyst timing across short-dated event markets, then force every idea through validation, resolution review, and execution testing.",
     points: [
-      ["Signal Discovery", "Feature search across macro, flow, and market microstructure inputs."],
-      ["Regime Tests", "We break ideas under changing volatility, liquidity, and correlation conditions."],
-      ["Human Review", "No model is promoted without being explainable to researchers and traders."]
+      ["Signal Discovery", "Search for repeatable repricing around catalysts, order-flow imbalances, and contract design."],
+      ["Resolution Audit", "We verify settlement language and edge cases before capital touches a market."],
+      ["Human Review", "No model is promoted unless the logic is explainable to both research and live trading."]
     ]
   },
   risk: {
     kicker: "Risk Discipline",
-    title: "Capital protection is designed into the process rather than added at the end.",
+    title: "Binary payoff markets demand hard risk framing from the first draft.",
     text:
-      "We size exposure with forward-looking controls, live health checks, and hard limits on concentration, factor overlap, and implementation drift.",
+      "We size exposure around event correlation, liquidity cliffs, and resolution uncertainty rather than pretending these contracts behave like smooth continuous markets.",
     points: [
-      ["Position Limits", "Portfolio sizing adapts before the market forces the issue."],
-      ["Scenario Review", "Stress templates model bad paths before a strategy sees production capital."],
-      ["Live Monitors", "Health events, slippage, and venue instability feed directly into risk throttles."]
+      ["Position Limits", "Size stays bounded across related events, expiries, and crowded narratives."],
+      ["Scenario Review", "We model ambiguous outcomes, late news, and venue-specific edge cases before trading live."],
+      ["Live Monitors", "Liquidity, queue position, and order-book instability feed directly into throttles."]
     ]
   },
   execution: {
     kicker: "Execution Stack",
-    title: "Low-friction infrastructure built for speed, clarity, and resilient deployment.",
+    title: "Execution built for Kalshi order books, fill dynamics, and fast repricing.",
     text:
-      "Data, simulation, and production systems share a common spine, so live execution reflects the same assumptions we test in research.",
+      "Research, simulation, and live trading share the same market definitions, so decisions reflect the actual venue rather than an idealized backtest.",
     points: [
-      ["Data Spine", "Research and trading use consistent market and derived data definitions."],
-      ["Observability", "Latency, venue health, and fill quality stay visible during the full trading cycle."],
-      ["Tight Feedback", "Execution diagnostics feed back into model review without waiting for quarterly retrospectives."]
+      ["Venue Context", "We track book depth, spread behavior, and contract-specific frictions in real time."],
+      ["Observability", "Latency, fills, and cancel-replace behavior stay visible during the full trade cycle."],
+      ["Tight Feedback", "Execution diagnostics feed back into model review while the event is still relevant."]
     ]
   }
 };
@@ -37,46 +37,46 @@ const strategyData = {
 const workflowData = {
   observe: {
     label: "Observe",
-    title: "Collect, clean, and challenge market structure data.",
+    title: "Collect, clean, and challenge event-market data.",
     text:
-      "Every cycle begins with high-quality market, venue, and derived data. We look for repeatable structure, not stories we merely want to believe.",
+      "Every cycle begins with contract terms, order-book history, and catalyst calendars. We look for repeatable repricing, not stories we merely want to believe.",
     items: [
-      "Normalize data across venues and sessions.",
-      "Compare new information against existing assumptions.",
-      "Flag unstable inputs before they distort the research loop."
+      "Normalize contract specs, venue states, and settlement rules.",
+      "Compare implied probabilities against catalyst timing and flow.",
+      "Flag thin or unstable books before they distort the research loop."
     ]
   },
   shape: {
     label: "Shape",
-    title: "Turn raw behavior into hypotheses with clear failure modes.",
+    title: "Turn event behavior into hypotheses with explicit failure modes.",
     text:
-      "A useful idea is one that can be disproven quickly. We define what should hold, where it may break, and how the implementation will be evaluated.",
+      "A useful idea is one that can be disproven quickly. We define what should happen around catalysts, where the order book may lie, and how the trade will be invalidated.",
     items: [
-      "Frame signal logic in a way traders and engineers can inspect.",
-      "Attach explicit invalidation tests to every new pattern.",
-      "Keep the path from prototype to code visible from day one."
+      "Frame logic in probabilities rather than narratives.",
+      "Attach explicit invalidation tests and resolution review to every setup.",
+      "Keep the path from prototype to live market visible from day one."
     ]
   },
   deploy: {
-    label: "Deploy",
-    title: "Move from research conviction to production readiness without losing context.",
+    label: "Trade",
+    title: "Move from research conviction to live orders without losing the risk context.",
     text:
-      "Strategies graduate only when the engineering surface, risk profile, and monitoring requirements are all understood by the team that will own them.",
+      "Setups go live only when sizing, liquidity expectations, and venue mechanics are understood by the same person placing the trade.",
     items: [
-      "Test live assumptions against paper and staged environments.",
-      "Verify latency, market access, and fill behavior under pressure.",
-      "Document ownership so operational surprises have clear responders."
+      "Test assumptions in paper and staged environments before deploying capital.",
+      "Verify queueing, fills, and slippage during active markets.",
+      "Document playbooks for event-time adjustments when conditions change."
     ]
   },
   refine: {
     label: "Refine",
-    title: "Study outcomes continuously and sharpen the process with every iteration.",
+    title: "Study outcomes continuously and sharpen the process after every market resolves.",
     text:
-      "The work does not end with deployment. We review fills, behavior shifts, and model decay to keep the stack adaptive and honest.",
+      "The work does not end at entry. We review fills, outcome distributions, and post-resolution behavior to keep the stack adaptive and honest.",
     items: [
-      "Measure what improved and what only looked promising in backtests.",
-      "Reallocate capital toward signals that stay robust across regimes.",
-      "Fold production insight back into research, tooling, and risk design."
+      "Measure what improved and what only looked good in historical data.",
+      "Reallocate capital toward setups that stay robust across event types.",
+      "Fold live insight back into research, tooling, and risk design."
     ]
   }
 };
@@ -86,7 +86,7 @@ const teamData = [
     role: "Founder / CIO",
     name: "Evan Einbund",
     summary:
-      "Leads firm architecture, research priorities, and the long-term direction of Hagakure.",
+      "Leads research priorities, execution design, and the long-term direction of Hagakure.",
     bio:
       "Evan studied Mathematics, Statistics, and Business at the University of Michigan. He spent last summer interning at IMC Trading as a Research Analyst and is now pursuing a Master of Finance at the Massachusetts Institute of Technology."
   },
@@ -96,57 +96,57 @@ const teamData = [
     summary:
       "Is Lance.",
     bio:
-      "Lance doesn't actually do anything. The company felt as though by itself generates alpha."
+      "Lance doesn't actually do anything. The company felt as though Lance himself generates alpha."
   }
 ];
 
 const roleData = [
   {
-    category: "engineering",
-    title: "Market Data Engineer",
-    location: "New York / Chicago",
-    type: "Full Time",
-    summary: "Own the acquisition, normalization, and distribution of live and historical market data.",
+    category: "research",
+    title: "Event Structure",
+    location: "Resolution + settlement",
+    type: "Research Lens",
+    summary: "We look for markets where contract language, timing, and venue behavior create repeatable probability dislocations.",
     points: [
-      "Build and maintain low-latency data connectors and validation pipelines.",
-      "Partner with researchers on replay, backtest, and simulation quality.",
-      "Improve observability around feed health, drift, and missingness."
+      "Review resolution criteria before capital ever touches a contract.",
+      "Map how wording, timing, and edge cases can shift fair value.",
+      "Treat settlement clarity as part of the edge, not an afterthought."
     ]
   },
   {
-    category: "quant",
-    title: "Quantitative Researcher",
-    location: "New York / Singapore",
-    type: "Full Time",
-    summary: "Develop systematic signals and portfolio logic across global liquid markets.",
+    category: "research",
+    title: "Catalyst Timing",
+    location: "Releases + repricing",
+    type: "Research Lens",
+    summary: "We focus on when new information reaches the market and how quickly order books digest it.",
     points: [
-      "Work on alpha discovery, feature design, and statistical validation.",
-      "Collaborate directly with traders and engineers on live rollout.",
-      "Treat implementation quality as part of the research standard."
+      "Track scheduled releases, headline windows, and information decay.",
+      "Measure how implied probabilities move before, during, and after catalysts.",
+      "Favor setups where speed and structure matter more than storytelling."
     ]
   },
   {
-    category: "trading",
-    title: "Execution Trader",
-    location: "Chicago / Singapore",
-    type: "Full Time",
-    summary: "Operate alongside researchers and developers to keep live strategies adaptive and controlled.",
+    category: "execution",
+    title: "Order Book Tactics",
+    location: "Liquidity + queueing",
+    type: "Execution Lens",
+    summary: "Execution on Kalshi is part of the strategy, so we care deeply about queue position, spread behavior, and fill quality.",
     points: [
-      "Monitor live books, venue behavior, and real-time execution quality.",
-      "Help diagnose structural changes in the market as they happen.",
-      "Turn observations into product and strategy improvements quickly."
+      "Study when to post, take, cancel, and reprice without leaking edge.",
+      "Monitor depth shifts and participant behavior through the full event cycle.",
+      "Feed live execution observations back into model review in real time."
     ]
   },
   {
-    category: "engineering",
-    title: "Front-End Trading Systems Engineer",
-    location: "New York",
-    type: "Full Time",
-    summary: "Design trader-facing interfaces that stay fast, legible, and trustworthy under pressure.",
+    category: "risk",
+    title: "Binary Risk Framing",
+    location: "Sizing + concentration",
+    type: "Risk Lens",
+    summary: "Binary payoff markets reward discipline, especially when several contracts are really the same bet in disguise.",
     points: [
-      "Build dashboards that surface execution, risk, and infrastructure state clearly.",
-      "Collaborate with traders to reduce friction in live decision making.",
-      "Bring strong product taste to high-stakes internal tools."
+      "Cap exposure across correlated narratives, expiries, and event clusters.",
+      "Model bad paths around ambiguous outcomes and late-breaking information.",
+      "Keep sizing rules strict when liquidity or clarity deteriorates."
     ]
   }
 ];
@@ -248,9 +248,9 @@ function renderRoles(filter = "all", activeIndex = 0) {
   if (!filtered.length) {
     roleGrid.innerHTML = "";
     roleDetail.innerHTML = `
-      <p class="role-detail-kicker">No roles</p>
-      <h3>No openings in this category right now.</h3>
-      <p>Check back soon or use the contact form below to introduce yourself.</p>
+      <p class="role-detail-kicker">No focus areas</p>
+      <h3>Nothing is highlighted in this category right now.</h3>
+      <p>Use the contact form below if you want to talk event markets, tooling, or research process.</p>
       <ul class="role-points"></ul>
     `;
     return;
@@ -268,7 +268,7 @@ function renderRoles(filter = "all", activeIndex = 0) {
           <p>${role.summary}</p>
           <div class="role-card-meta">
             <span>${role.location}</span>
-            <span>View role</span>
+            <span>View lens</span>
           </div>
         </article>
       `
@@ -457,9 +457,9 @@ function initApp() {
     const interestLabel =
       interestField instanceof HTMLSelectElement && interestField.selectedIndex >= 0
         ? interestField.options[interestField.selectedIndex].text
-        : "team";
+        : "message";
 
-    formResponse.textContent = `${name || "Candidate"}, your ${interestLabel} interest has been staged for review. Hagakure will be in touch shortly.`;
+    formResponse.textContent = `Thanks, ${name || "there"}. Your ${interestLabel.toLowerCase()} note has been received.`;
     contactForm.reset();
   });
 
