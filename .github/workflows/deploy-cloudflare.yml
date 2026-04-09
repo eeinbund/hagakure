@@ -1,0 +1,40 @@
+name: Deploy To Cloudflare
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+      - "wrangler.jsonc"
+      - ".github/workflows/deploy-cloudflare.yml"
+      - ".gitignore"
+  workflow_dispatch:
+
+concurrency:
+  group: "cloudflare"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Workers
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: deploy
+
+      - name: Print deployment URL
+        if: ${{ steps.deploy.outputs.deployment-url != '' }}
+        run: echo "Deployment URL: ${{ steps.deploy.outputs.deployment-url }}"
