@@ -4,6 +4,7 @@
 !.github/workflows/
 !.github/workflows/deploy-pages.yml
 !README.md
+!wrangler.jsonc
 !frontend/
 !frontend/**
 
