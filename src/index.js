@@ -86,9 +86,35 @@ function getSeriesMeta(seriesTicker) {
   return null;
 }
 
+function parseTime(value) {
+  if (!value) return null;
+  const timestamp = Date.parse(value);
+  return Number.isNaN(timestamp) ? null : timestamp;
+}
+
+function hasResolvedOutcome(market) {
+  const now = Date.now();
+  const status = `${market.status || ""}`.toLowerCase();
+  const result = `${market.result || ""}`.trim();
+  const expirationValue = `${market.expiration_value || ""}`.trim();
+  const closeTime = parseTime(market.close_time);
+  const expectedExpiration = parseTime(market.expected_expiration_time);
+
+  // Kalshi weather markets can remain queryable via status=open even after the
+  // underlying weather observation is effectively settled. Drop anything that
+  // is no longer actively tradable or looks resolved already.
+  return (
+    status !== "active" ||
+    Boolean(result) ||
+    Boolean(expirationValue) ||
+    (closeTime !== null && closeTime <= now) ||
+    (expectedExpiration !== null && expectedExpiration <= now)
+  );
+}
+
 function mapMarket(market) {
   const meta = getSeriesMeta(market._seriesTicker || '');
-  if (!meta) return null;
+  if (!meta || hasResolvedOutcome(market)) return null;
 
   const yesBid = parseFloat(market.yes_bid_dollars) || 0;
   const yesAsk = parseFloat(market.yes_ask_dollars) || 0;
