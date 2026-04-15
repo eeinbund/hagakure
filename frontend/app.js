@@ -159,7 +159,7 @@ const pricerPhaseText = [
   "Search weather markets from your keyword.",
   "Estimate mu and sigma from the path.",
   "Solve the PDE anchor and run Euler-Maruyama futures.",
-  "Return the most correlated weather contracts."
+  "Return the most similar weather contracts."
 ];
 
 const pricerState = {
@@ -212,6 +212,11 @@ const pricerPhaseList = document.getElementById("pricer-phase-list");
 const pricerNetworkCanvas = document.getElementById("pricer-network");
 const pricerNetworkFrame = document.getElementById("pricer-network-frame");
 const pricerPathCanvas = document.getElementById("pricer-path-chart");
+const weatherAnalyticsSummary = document.getElementById("weather-analytics-summary");
+const weatherAnalyticsLeader = document.getElementById("weather-analytics-leader");
+const weatherAnalyticsShape = document.getElementById("weather-analytics-shape");
+const weatherVolumeCanvas = document.getElementById("weather-volume-chart");
+const weatherDistributionCanvas = document.getElementById("weather-distribution-chart");
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -269,6 +274,230 @@ function formatVolume(value) {
     return `${(value / 1000).toFixed(1)}k`;
   }
   return `${value}`;
+}
+
+function normalizeWhitespace(text) {
+  return `${text || ""}`.replace(/\s+/g, " ").trim();
+}
+
+function parseContractDate(title) {
+  const dayMatch = title.match(/\b([A-Z][a-z]{2,8}\.? \d{1,2}, \d{4})\b/);
+  if (dayMatch) {
+    const time = Date.parse(dayMatch[1]);
+    return Number.isNaN(time)
+      ? { label: dayMatch[1], time: null, granularity: "day" }
+      : { label: dayMatch[1], time, granularity: "day" };
+  }
+
+  const monthMatch = title.match(/\b([A-Z][a-z]{2,8}\.? \d{4})\b/);
+  if (monthMatch) {
+    const time = Date.parse(`1 ${monthMatch[1]}`);
+    return Number.isNaN(time)
+      ? { label: monthMatch[1], time: null, granularity: "month" }
+      : { label: monthMatch[1], time, granularity: "month" };
+  }
+
+  return { label: "", time: null, granularity: "unknown" };
+}
+
+function parseNumericBand(title) {
+  const match = title.match(/(-?\d+(?:\.\d+)?)\s*(?:°|degrees|inch(?:es)?|in\.?|%)?\s*[–-]\s*(-?\d+(?:\.\d+)?)/i);
+  if (!match) return null;
+
+  const low = Number(match[1]);
+  const high = Number(match[2]);
+  if (!Number.isFinite(low) || !Number.isFinite(high)) return null;
+
+  return {
+    low: Math.min(low, high),
+    high: Math.max(low, high),
+    center: (low + high) / 2,
+    width: Math.max(Math.abs(high - low), 0.01)
+  };
+}
+
+function describeMarketContract(market) {
+  const title = normalizeWhitespace(market.title);
+  const normalized = title.toLowerCase();
+  const date = parseContractDate(title);
+
+  let temperatureSide = "none";
+  if (normalized.includes("maximum temperature") || normalized.includes("max temp") || normalized.includes("high temp")) {
+    temperatureSide = "max";
+  } else if (normalized.includes("minimum temperature") || normalized.includes("min temp") || normalized.includes("low temp")) {
+    temperatureSide = "min";
+  } else if (normalized.includes("temperature")) {
+    temperatureSide = "temperature";
+  }
+
+  return {
+    title,
+    normalized,
+    date,
+    numericBand: parseNumericBand(title),
+    temperatureSide
+  };
+}
+
+function gaussianSimilarity(delta, scale) {
+  const stableScale = Math.max(scale, 1e-6);
+  return Math.exp(-0.5 * (delta / stableScale) ** 2);
+}
+
+function buildSimilarityStats(markets) {
+  return {
+    priceScale: Math.max(standardDeviation(markets.map((market) => market.currentPrice)), 0.06),
+    horizonScale: Math.max(standardDeviation(markets.map((market) => market.horizonHours)), 12),
+    volatilityScale: Math.max(standardDeviation(markets.map((market) => market.volatility)), 0.08)
+  };
+}
+
+function locationSimilarity(targetMarket, candidateMarket) {
+  if (targetMarket.city === candidateMarket.city) return 1;
+  if (targetMarket.region === candidateMarket.region) return 0.68;
+  return 0.18;
+}
+
+function eventSimilarity(targetMarket, targetContract, candidateMarket, candidateContract) {
+  if (targetMarket.event !== candidateMarket.event) return 0.08;
+  if (targetMarket.event !== "Temperature") return 1;
+  if (targetContract.temperatureSide === candidateContract.temperatureSide) return 1;
+  if (targetContract.temperatureSide === "temperature" || candidateContract.temperatureSide === "temperature") return 0.75;
+  return 0.22;
+}
+
+function dateSimilarity(targetContract, candidateContract) {
+  if (targetContract.date.label && targetContract.date.label === candidateContract.date.label) return 1;
+  if (!targetContract.date.time || !candidateContract.date.time) return 0.45;
+
+  const diffHours = Math.abs(targetContract.date.time - candidateContract.date.time) / 3_600_000;
+  const scale = targetContract.date.granularity === "month" && candidateContract.date.granularity === "month"
+    ? 24 * 45
+    : 24 * 4;
+  return gaussianSimilarity(diffHours, scale);
+}
+
+function bandSimilarity(targetMarket, targetContract, candidateMarket, candidateContract) {
+  if (targetMarket.event !== candidateMarket.event) return 0.12;
+  if (!targetContract.numericBand || !candidateContract.numericBand) return 0.45;
+
+  const scaleByEvent = {
+    Temperature: 7,
+    Rain: 1.5,
+    Snow: 2
+  };
+  const scale = scaleByEvent[targetMarket.event] || 3;
+  return gaussianSimilarity(
+    targetContract.numericBand.center - candidateContract.numericBand.center,
+    scale + Math.max(targetContract.numericBand.width, candidateContract.numericBand.width)
+  );
+}
+
+function marketStructureSimilarity(targetMarket, targetContract, candidateMarket, candidateContract) {
+  const structure = (
+    eventSimilarity(targetMarket, targetContract, candidateMarket, candidateContract) * 0.3 +
+    locationSimilarity(targetMarket, candidateMarket) * 0.24 +
+    dateSimilarity(targetContract, candidateContract) * 0.24 +
+    bandSimilarity(targetMarket, targetContract, candidateMarket, candidateContract) * 0.22
+  );
+
+  return clamp(structure, 0, 1);
+}
+
+function marketStateSimilarity(targetMarket, candidateMarket, stats) {
+  const priceScore = gaussianSimilarity(targetMarket.currentPrice - candidateMarket.currentPrice, stats.priceScale);
+  const horizonScore = gaussianSimilarity(targetMarket.horizonHours - candidateMarket.horizonHours, stats.horizonScale);
+  const volatilityScore = gaussianSimilarity(targetMarket.volatility - candidateMarket.volatility, stats.volatilityScale);
+
+  return (
+    priceScore * 0.48 +
+    horizonScore * 0.2 +
+    volatilityScore * 0.32
+  );
+}
+
+// Blend contract semantics with standardized state variables so "similar" does not collapse to all-positive price vectors.
+function marketSimilarity(targetMarket, candidateMarket, stats) {
+  const targetContract = describeMarketContract(targetMarket);
+  const candidateContract = describeMarketContract(candidateMarket);
+  const structureScore = marketStructureSimilarity(targetMarket, targetContract, candidateMarket, candidateContract);
+  const stateScore = marketStateSimilarity(targetMarket, candidateMarket, stats);
+  let similarity = structureScore * 0.64 + stateScore * 0.36;
+
+  if (targetMarket.event !== candidateMarket.event) {
+    similarity *= 0.5;
+  }
+
+  return clamp(Math.min(similarity, 0.999), 0.01, 0.999);
+}
+
+const weatherFamilyOrder = ["High", "Low", "Rain", "Snow", "Temp", "Other"];
+const weatherFamilyColors = {
+  High: "#ff645d",
+  Low: "#5cb8ff",
+  Rain: "#56d08f",
+  Snow: "#c18fff",
+  Temp: "#ffbf54",
+  Other: "#a8b4b9"
+};
+
+function getMarketFamily(market) {
+  if (market.event === "Rain") return "Rain";
+  if (market.event === "Snow") return "Snow";
+  if (market.event !== "Temperature") return "Other";
+
+  const contract = describeMarketContract(market);
+  if (contract.temperatureSide === "max") return "High";
+  if (contract.temperatureSide === "min") return "Low";
+  return "Temp";
+}
+
+function buildWeatherAnalytics(markets) {
+  const familyMap = new Map();
+
+  markets.forEach((market) => {
+    const family = getMarketFamily(market);
+    if (!familyMap.has(family)) {
+      familyMap.set(family, {
+        key: family,
+        label: family,
+        color: weatherFamilyColors[family] || weatherFamilyColors.Other,
+        volume: 0,
+        prices: [],
+        count: 0
+      });
+    }
+
+    const entry = familyMap.get(family);
+    entry.volume += market.volume;
+    entry.prices.push(market.currentPrice);
+    entry.count += 1;
+  });
+
+  const families = weatherFamilyOrder
+    .map((family) => familyMap.get(family))
+    .filter(Boolean);
+
+  families.forEach((entry) => {
+    entry.meanPrice = average(entry.prices);
+    entry.medianPrice = quantile(entry.prices, 0.5);
+    entry.lowPrice = quantile(entry.prices, 0.1);
+    entry.highPrice = quantile(entry.prices, 0.9);
+  });
+
+  const leader = families.reduce((best, entry) => (entry.volume > (best?.volume || 0) ? entry : best), null);
+  const widest = families.reduce((best, entry) => {
+    const spread = entry.highPrice - entry.lowPrice;
+    return spread > (best?.spread || -1) ? { entry, spread } : best;
+  }, null);
+
+  return {
+    families,
+    totalMarkets: markets.length,
+    totalVolume: markets.reduce((sum, market) => sum + market.volume, 0),
+    leader,
+    widest: widest?.entry || null
+  };
 }
 
 function hashString(text) {
@@ -555,40 +784,15 @@ function searchWeatherMarkets(keyword) {
     .slice(0, 6);
 }
 
-function vectorForMarket(market) {
-  return [
-    market.currentPrice,
-    market.yesBid,
-    market.yesAsk,
-    market.lastPrice,
-    clamp(market.horizonHours / 72, 0, 1),
-    clamp(market.signalBias + 0.5, 0, 1),
-    clamp(market.volatility, 0, 1)
-  ];
-}
-
-function cosineSimilarity(left, right) {
-  let dot = 0;
-  let leftNorm = 0;
-  let rightNorm = 0;
-  for (let index = 0; index < left.length; index += 1) {
-    dot += left[index] * right[index];
-    leftNorm += left[index] ** 2;
-    rightNorm += right[index] ** 2;
-  }
-  const denominator = Math.sqrt(leftNorm) * Math.sqrt(rightNorm);
-  return denominator ? dot / denominator : 0;
-}
-
-function findCorrelatedMarkets(targetMarket, count) {
-  const targetVector = vectorForMarket(targetMarket);
+function findSimilarMarkets(targetMarket, count) {
+  const stats = buildSimilarityStats(weatherMarketCatalog);
   return weatherMarketCatalog
     .filter((market) => market.ticker !== targetMarket.ticker)
     .map((market) => ({
       ...market,
-      correlation: cosineSimilarity(targetVector, vectorForMarket(market))
+      similarity: marketSimilarity(targetMarket, market, stats)
     }))
-    .sort((left, right) => right.correlation - left.correlation)
+    .sort((left, right) => right.similarity - left.similarity)
     .slice(0, count);
 }
 
@@ -700,7 +904,7 @@ function simulatePricerResult(market, keyword, correlatedCount) {
     forecastMeanPath: monteCarlo.meanPath,
     forecastLowerPath: monteCarlo.lowerPath,
     forecastUpperPath: monteCarlo.upperPath,
-    correlatedMarkets: findCorrelatedMarkets(market, correlatedCount)
+    similarMarkets: findSimilarMarkets(market, correlatedCount)
   };
 }
 
@@ -800,7 +1004,7 @@ function renderPricerMarketList() {
         setPricerStatus(
           "Primed",
           `${market.city} weather contract locked.`,
-          `Now pick how many correlated markets you want back, then price ${market.ticker}.`,
+          `Now pick how many similar markets you want back, then price ${market.ticker}.`,
           false
         );
       }
@@ -895,20 +1099,20 @@ function renderPricerCorrelatedMarkets(result) {
   if (!result) {
     pricerCorrelationList.innerHTML = `
       <article class="pricer-empty">
-        Price a contract and the graph-style correlation panel will return the top ${pricerState.correlatedCount} weather markets.
+        Price a contract and the similarity panel will return the top ${pricerState.correlatedCount} weather markets.
       </article>
     `;
     return;
   }
 
-  pricerCorrelationList.innerHTML = result.correlatedMarkets
+  pricerCorrelationList.innerHTML = result.similarMarkets
     .map(
       (market, index) => `
         <article class="pricer-correlation-item">
           <span class="pricer-correlation-rank">${String(index + 1).padStart(2, "0")}</span>
           <div class="pricer-correlation-copy">
             <strong>${market.title}</strong>
-            <p>${market.city} · ${market.event} · corr ${formatPercent(market.correlation)}</p>
+            <p>${market.city} · ${market.event} · sim ${formatPercent(market.similarity)}</p>
           </div>
           <span class="pricer-inline-pill">${formatCents(market.lastPrice)}</span>
         </article>
@@ -1023,9 +1227,220 @@ function drawPricerPathChart(result) {
   context.fillText("Projected mean + forecast band", padding + 140 * (window.devicePixelRatio || 1), padding - 6 * (window.devicePixelRatio || 1));
 }
 
+function drawAnalyticsPlaceholder(canvas, message) {
+  if (!canvas) return;
+  const context = canvas.getContext("2d");
+  if (!context) return;
+
+  const { width, height } = resizeCanvasToDisplaySize(canvas);
+  context.clearRect(0, 0, width, height);
+  context.fillStyle = "rgba(255, 255, 255, 0.03)";
+  context.fillRect(0, 0, width, height);
+  context.fillStyle = "rgba(244, 239, 232, 0.56)";
+  context.font = `${13 * (window.devicePixelRatio || 1)}px IBM Plex Sans`;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText(message, width / 2, height / 2);
+}
+
+function drawWeatherVolumeChart(analytics) {
+  if (!weatherVolumeCanvas) return;
+  if (!analytics.families.length) {
+    drawAnalyticsPlaceholder(weatherVolumeCanvas, "Waiting for live weather volume data.");
+    return;
+  }
+
+  const context = weatherVolumeCanvas.getContext("2d");
+  if (!context) return;
+
+  const { width, height, ratio } = resizeCanvasToDisplaySize(weatherVolumeCanvas);
+  const paddingTop = 22 * ratio;
+  const paddingRight = 18 * ratio;
+  const paddingBottom = 42 * ratio;
+  const paddingLeft = 54 * ratio;
+  const chartWidth = width - paddingLeft - paddingRight;
+  const chartHeight = height - paddingTop - paddingBottom;
+  const maxVolume = Math.max(...analytics.families.map((entry) => entry.volume), 1);
+  const stepX = chartWidth / analytics.families.length;
+  const barWidth = Math.min(stepX * 0.56, 82 * ratio);
+
+  context.clearRect(0, 0, width, height);
+
+  context.strokeStyle = "rgba(255, 255, 255, 0.07)";
+  context.lineWidth = 1 * ratio;
+  context.font = `${11 * ratio}px IBM Plex Sans`;
+  context.fillStyle = "rgba(244, 239, 232, 0.42)";
+  context.textAlign = "right";
+  context.textBaseline = "middle";
+
+  for (let tick = 0; tick <= 4; tick += 1) {
+    const progress = tick / 4;
+    const y = paddingTop + chartHeight * progress;
+    const volume = maxVolume * (1 - progress);
+    context.beginPath();
+    context.moveTo(paddingLeft, y);
+    context.lineTo(width - paddingRight, y);
+    context.stroke();
+    context.fillText(formatVolume(Math.round(volume)), paddingLeft - 10 * ratio, y);
+  }
+
+  analytics.families.forEach((entry, index) => {
+    const x = paddingLeft + stepX * index + stepX / 2;
+    const barHeight = chartHeight * (entry.volume / maxVolume);
+    const y = paddingTop + chartHeight - barHeight;
+    const gradient = context.createLinearGradient(0, y, 0, y + barHeight);
+    gradient.addColorStop(0, `${entry.color}f2`);
+    gradient.addColorStop(1, `${entry.color}4a`);
+
+    context.fillStyle = gradient;
+    context.beginPath();
+    context.roundRect(x - barWidth / 2, y, barWidth, barHeight, 14 * ratio);
+    context.fill();
+
+    context.fillStyle = "rgba(244, 239, 232, 0.92)";
+    context.font = `${11 * ratio}px IBM Plex Sans`;
+    context.textAlign = "center";
+    context.textBaseline = "bottom";
+    context.fillText(formatVolume(Math.round(entry.volume)), x, y - 6 * ratio);
+
+    context.fillStyle = "rgba(244, 239, 232, 0.66)";
+    context.font = `${10 * ratio}px IBM Plex Sans`;
+    context.textBaseline = "top";
+    context.fillText(`${entry.count} mkts`, x, paddingTop + chartHeight + 6 * ratio);
+
+    context.fillStyle = entry.color;
+    context.font = `${12 * ratio}px Sora`;
+    context.fillText(entry.label.toUpperCase(), x, paddingTop + chartHeight + 22 * ratio);
+  });
+}
+
+function drawWeatherDistributionChart(analytics) {
+  if (!weatherDistributionCanvas) return;
+  if (!analytics.families.length) {
+    drawAnalyticsPlaceholder(weatherDistributionCanvas, "Waiting for live price-shape data.");
+    return;
+  }
+
+  const context = weatherDistributionCanvas.getContext("2d");
+  if (!context) return;
+
+  const { width, height, ratio } = resizeCanvasToDisplaySize(weatherDistributionCanvas);
+  const paddingTop = 18 * ratio;
+  const paddingRight = 18 * ratio;
+  const paddingBottom = 42 * ratio;
+  const paddingLeft = 40 * ratio;
+  const chartWidth = width - paddingLeft - paddingRight;
+  const chartHeight = height - paddingTop - paddingBottom;
+  const laneWidth = chartWidth / analytics.families.length;
+  const bins = 18;
+
+  context.clearRect(0, 0, width, height);
+  context.strokeStyle = "rgba(255, 255, 255, 0.07)";
+  context.lineWidth = 1 * ratio;
+  context.font = `${11 * ratio}px IBM Plex Sans`;
+  context.fillStyle = "rgba(244, 239, 232, 0.42)";
+  context.textAlign = "right";
+  context.textBaseline = "middle";
+
+  [0, 0.5, 1].forEach((value) => {
+    const y = paddingTop + chartHeight * (1 - value);
+    context.beginPath();
+    context.moveTo(paddingLeft, y);
+    context.lineTo(width - paddingRight, y);
+    context.stroke();
+    context.fillText(formatCents(value), paddingLeft - 8 * ratio, y);
+  });
+
+  analytics.families.forEach((entry, index) => {
+    const counts = Array.from({ length: bins }, () => 0);
+    entry.prices.forEach((price) => {
+      const bucket = clamp(Math.floor(price * bins), 0, bins - 1);
+      counts[bucket] += 1;
+    });
+
+    const maxCount = Math.max(...counts, 1);
+    const xCenter = paddingLeft + laneWidth * index + laneWidth / 2;
+    const maxHalfWidth = laneWidth * 0.28;
+
+    context.beginPath();
+    counts.forEach((count, bucketIndex) => {
+      const price = (bucketIndex + 0.5) / bins;
+      const y = paddingTop + chartHeight * (1 - price);
+      const halfWidth = count > 0 ? Math.max((count / maxCount) * maxHalfWidth, 3 * ratio) : 0;
+      if (bucketIndex === 0) {
+        context.moveTo(xCenter - halfWidth, y);
+      } else {
+        context.lineTo(xCenter - halfWidth, y);
+      }
+    });
+    for (let bucketIndex = bins - 1; bucketIndex >= 0; bucketIndex -= 1) {
+      const count = counts[bucketIndex];
+      const price = (bucketIndex + 0.5) / bins;
+      const y = paddingTop + chartHeight * (1 - price);
+      const halfWidth = count > 0 ? Math.max((count / maxCount) * maxHalfWidth, 3 * ratio) : 0;
+      context.lineTo(xCenter + halfWidth, y);
+    }
+    context.closePath();
+    context.fillStyle = `${entry.color}55`;
+    context.strokeStyle = `${entry.color}cc`;
+    context.lineWidth = 1.6 * ratio;
+    context.fill();
+    context.stroke();
+
+    const lowY = paddingTop + chartHeight * (1 - entry.lowPrice);
+    const highY = paddingTop + chartHeight * (1 - entry.highPrice);
+    const medianY = paddingTop + chartHeight * (1 - entry.medianPrice);
+    context.strokeStyle = "rgba(244, 239, 232, 0.72)";
+    context.lineWidth = 1.2 * ratio;
+    context.beginPath();
+    context.moveTo(xCenter, lowY);
+    context.lineTo(xCenter, highY);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(xCenter - laneWidth * 0.18, medianY);
+    context.lineTo(xCenter + laneWidth * 0.18, medianY);
+    context.stroke();
+
+    context.fillStyle = entry.color;
+    context.beginPath();
+    context.arc(xCenter, paddingTop + chartHeight * (1 - entry.meanPrice), 3.5 * ratio, 0, Math.PI * 2);
+    context.fill();
+
+    context.fillStyle = "rgba(244, 239, 232, 0.72)";
+    context.font = `${11 * ratio}px Sora`;
+    context.textAlign = "center";
+    context.textBaseline = "top";
+    context.fillText(entry.label.toUpperCase(), xCenter, paddingTop + chartHeight + 10 * ratio);
+  });
+}
+
+function renderWeatherAnalytics() {
+  const analytics = buildWeatherAnalytics(weatherMarketCatalog);
+
+  if (weatherAnalyticsSummary) {
+    weatherAnalyticsSummary.textContent = analytics.families.length
+      ? `${analytics.totalMarkets} live contracts`
+      : "Awaiting live feed";
+  }
+  if (weatherAnalyticsLeader) {
+    weatherAnalyticsLeader.textContent = analytics.leader
+      ? `${analytics.leader.label} leads ${formatVolume(Math.round(analytics.leader.volume))}`
+      : "--";
+  }
+  if (weatherAnalyticsShape) {
+    weatherAnalyticsShape.textContent = analytics.widest
+      ? `${analytics.widest.label} has the widest 10-90% band`
+      : "--";
+  }
+
+  drawWeatherVolumeChart(analytics);
+  drawWeatherDistributionChart(analytics);
+}
+
 const pricerNetworkState = {
   nodes: [],
-  edges: []
+  edges: [],
+  animationStarted: false
 };
 
 function initPricerNetwork() {
@@ -1045,14 +1460,15 @@ function initPricerNetwork() {
   });
 
   pricerNetworkState.edges = [];
+  const networkStats = buildSimilarityStats(weatherMarketCatalog);
   for (let leftIndex = 0; leftIndex < pricerNetworkState.nodes.length; leftIndex += 1) {
     for (let rightIndex = leftIndex + 1; rightIndex < pricerNetworkState.nodes.length; rightIndex += 1) {
       const left = weatherMarketCatalog[leftIndex];
       const right = weatherMarketCatalog[rightIndex];
       const sameEvent = left.event === right.event;
       const sameRegion = left.region === right.region;
-      const similarity = cosineSimilarity(vectorForMarket(left), vectorForMarket(right));
-      if (similarity > 0.985 || sameEvent || sameRegion) {
+      const similarity = marketSimilarity(left, right, networkStats);
+      if (similarity > 0.72 || sameEvent || sameRegion) {
         pricerNetworkState.edges.push([leftIndex, rightIndex, similarity]);
       }
     }
@@ -1148,7 +1564,10 @@ function initPricerNetwork() {
     requestAnimationFrame(draw);
   }
 
-  requestAnimationFrame(draw);
+  if (!pricerNetworkState.animationStarted) {
+    pricerNetworkState.animationStarted = true;
+    requestAnimationFrame(draw);
+  }
 }
 
 function executePricerSearch(keyword) {
@@ -1168,7 +1587,7 @@ function executePricerSearch(keyword) {
     setPricerStatus(
       "Search Ready",
       `${pricerState.filteredMarkets.length} weather markets matched.`,
-      `Pick a contract, set the correlated-market count, and let the demo price ${market ? market.ticker : "the selected market"}.`,
+      `Pick a contract, set the similar-market count, and let the demo price ${market ? market.ticker : "the selected market"}.`,
       false
     );
   } else {
@@ -1200,7 +1619,7 @@ function runPricerDemo() {
     {
       mode: "Locking",
       title: `Locking ${market.ticker} into the weather-only demo.`,
-      text: `Keyword "${pricerState.keyword || market.event}" is shaping the candidate set and the graph neighborhood.`
+      text: `Keyword "${pricerState.keyword || market.event}" is shaping the candidate set and the similarity neighborhood.`
     },
     {
       mode: "Calibrating",
@@ -1214,8 +1633,8 @@ function runPricerDemo() {
     },
     {
       mode: "Simulating",
-      title: "Running Euler-Maruyama futures and graph correlation.",
-      text: `Projecting weather paths, averaging terminal prices, and pulling back the top ${pricerState.correlatedCount} correlated markets.`
+      title: "Running Euler-Maruyama futures and structural similarity.",
+      text: `Projecting weather paths, averaging terminal prices, and pulling back the top ${pricerState.correlatedCount} similar markets.`
     }
   ];
 
@@ -1239,7 +1658,7 @@ function runPricerDemo() {
     setPricerStatus(
       "Ready",
       `${market.ticker} demo fair value: ${formatCents(pricerState.result.predictedPrice)}.`,
-      `95% CI ${formatCents(pricerState.result.confidenceInterval[0])} to ${formatCents(pricerState.result.confidenceInterval[1])}. Top ${pricerState.correlatedCount} correlated weather markets are now below.`,
+      `95% CI ${formatCents(pricerState.result.confidenceInterval[0])} to ${formatCents(pricerState.result.confidenceInterval[1])}. Top ${pricerState.correlatedCount} similar weather markets are now below.`,
       false
     );
     syncPricerControls();
@@ -1253,6 +1672,8 @@ async function loadLiveMarkets() {
     const data = await resp.json();
     weatherMarketCatalog = Array.isArray(data) ? data : [];
     pricerState.marketsLoading = false;
+    initPricerNetwork();
+    renderWeatherAnalytics();
     if (weatherMarketCatalog.length > 0) {
       setPricerStatus(
         "Idle",
@@ -1269,7 +1690,10 @@ async function loadLiveMarkets() {
       );
     }
   } catch {
+    weatherMarketCatalog = [];
     pricerState.marketsLoading = false;
+    initPricerNetwork();
+    renderWeatherAnalytics();
     setPricerStatus(
       "Error",
       "Could not load live market data.",
@@ -1288,6 +1712,7 @@ function initPricer() {
   }
   renderPricerSummary(null);
   renderPricerCorrelatedMarkets(null);
+  renderWeatherAnalytics();
   drawPricerPathChart(null);
   renderPricerPhaseList(0, false);
   setPricerStatus(
@@ -1327,7 +1752,7 @@ function initPricer() {
     if (pricerState.result) {
       const market = getSelectedPricerMarket();
       if (market) {
-        pricerState.result.correlatedMarkets = findCorrelatedMarkets(market, pricerState.correlatedCount);
+        pricerState.result.similarMarkets = findSimilarMarkets(market, pricerState.correlatedCount);
         renderPricerCorrelatedMarkets(pricerState.result);
       }
     } else {
@@ -1340,6 +1765,7 @@ function initPricer() {
   });
 
   window.addEventListener("resize", () => {
+    renderWeatherAnalytics();
     drawPricerPathChart(pricerState.result);
   });
 }

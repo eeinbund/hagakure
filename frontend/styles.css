@@ -612,7 +612,8 @@ main {
 .pricer-network-panel,
 .pricer-market-panel,
 .pricer-results-panel,
-.pricer-correlated-panel {
+.pricer-correlated-panel,
+.pricer-analytics-panel {
   border-radius: var(--radius-xl);
   padding: 1.6rem;
 }
@@ -883,6 +884,35 @@ main {
   display: grid;
   gap: 0.8rem;
   margin-top: 1rem;
+}
+
+.pricer-analytics-note {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.pricer-analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.pricer-analytics-card {
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+#weather-volume-chart,
+#weather-distribution-chart {
+  width: 100%;
+  height: 16rem;
+  margin-top: 0.9rem;
+  border-radius: calc(var(--radius-lg) - 0.2rem);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
 }
 
 .pricer-market-item,
@@ -1263,7 +1293,8 @@ main {
 
 
   .pricer-summary-grid,
-  .pricer-phase-list {
+  .pricer-phase-list,
+  .pricer-analytics-grid {
     grid-template-columns: 1fr;
   }
 

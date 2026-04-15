@@ -271,7 +271,7 @@
           <p class="eyebrow">Example Pricer</p>
           <h2>A weather-only demo that walks through the full pricing ritual.</h2>
           <p class="section-subcopy">
-            Type a keyword, pick a weather market, choose how many correlated contracts you want back,
+            Type a keyword, pick a weather market, choose how many similar contracts you want back,
             and let the demo run a playful version of the notebook flow: MLP estimate, PDE anchor,
             then Euler-Maruyama futures.
           </p>
@@ -308,7 +308,7 @@
 
             <article class="pricer-card">
               <p class="pricer-card-kicker">Prompt 02</p>
-              <h3>How many correlated contracts should come back?</h3>
+              <h3>How many similar contracts should come back?</h3>
               <div class="pricer-slider-row">
                 <input id="pricer-correlation-count" type="range" min="3" max="8" step="1" value="5">
                 <strong id="pricer-correlation-output">5</strong>
@@ -347,7 +347,7 @@
                 <li class="is-active">Search weather markets from your keyword.</li>
                 <li>Estimate mu and sigma from the path.</li>
                 <li>Solve the PDE anchor and run Euler-Maruyama futures.</li>
-                <li>Return the most correlated weather contracts.</li>
+                <li>Return the most similar weather contracts.</li>
               </ol>
             </article>
 
@@ -373,10 +373,38 @@
 
             <article class="pricer-correlated-panel reveal">
               <div class="pricer-panel-head">
-                <span>Most Correlated Weather Markets</span>
+                <span>Most Similar Weather Markets</span>
                 <span id="pricer-correlation-label">Top 5</span>
               </div>
               <div class="pricer-correlation-list" id="pricer-correlation-list"></div>
+            </article>
+
+            <article class="pricer-analytics-panel reveal">
+              <div class="pricer-panel-head">
+                <span>Weather Market Snapshot</span>
+                <span class="pricer-mode" id="weather-analytics-summary">Awaiting live feed</span>
+              </div>
+              <p class="pricer-analytics-note">
+                Live contracts grouped into high-temp, low-temp, rain, snow, and fallback families so the page can show where liquidity and implied pricing are actually clustering.
+              </p>
+
+              <div class="pricer-analytics-grid">
+                <article class="pricer-analytics-card">
+                  <div class="pricer-panel-head">
+                    <span>Volume by Contract Family</span>
+                    <span id="weather-analytics-leader">--</span>
+                  </div>
+                  <canvas id="weather-volume-chart" width="540" height="260" aria-label="Weather market volume by contract family"></canvas>
+                </article>
+
+                <article class="pricer-analytics-card">
+                  <div class="pricer-panel-head">
+                    <span>Implied Price Shape</span>
+                    <span id="weather-analytics-shape">--</span>
+                  </div>
+                  <canvas id="weather-distribution-chart" width="540" height="260" aria-label="Weather market implied price shape by contract family"></canvas>
+                </article>
+              </div>
             </article>
           </div>
         </div>
