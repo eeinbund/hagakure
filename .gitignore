@@ -11,6 +11,7 @@
 !src/
 !src/**
 !kalshi_utils.py
+!zeta_scanner.py
 
 **/.DS_Store
 **/__pycache__/

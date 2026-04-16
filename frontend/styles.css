@@ -1219,6 +1219,95 @@ main {
   transform: translateY(0);
 }
 
+/* ── ζ-Field section ────────────────────────────────────────────────────────── */
+
+.zeta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.zeta-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.zeta-card-body {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.zeta-formula {
+  font-family: var(--mono, "IBM Plex Mono", monospace);
+  font-size: 0.82rem;
+  color: var(--accent-strong);
+  white-space: nowrap;
+}
+
+.zeta-why {
+  display: grid;
+  grid-template-columns: 1fr minmax(220px, 340px);
+  gap: 3rem;
+  margin-top: 3rem;
+  align-items: start;
+}
+
+.zeta-why-copy h3 {
+  font-size: 1.55rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.zeta-why-copy p {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.zeta-reasons {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.zeta-reasons li {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--muted);
+  padding-left: 1.1rem;
+  position: relative;
+}
+
+.zeta-reasons li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--accent-strong);
+}
+
+.zeta-why-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.zeta-stat {
+  background: linear-gradient(180deg, rgba(19, 16, 17, 0.94), rgba(12, 11, 11, 0.94));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius-xl);
+  padding: 1.2rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
 @media (max-width: 980px) {
   .desktop-nav {
     display: none;
@@ -1296,6 +1385,15 @@ main {
   .pricer-phase-list,
   .pricer-analytics-grid {
     grid-template-columns: 1fr;
+  }
+
+  .zeta-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .zeta-why {
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 
   .pricer-market-top,

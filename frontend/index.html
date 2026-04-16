@@ -409,6 +409,106 @@
           </div>
         </div>
       </section>
+      <section class="section" id="zeta-field">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Spectral Model</p>
+          <h2>The ζ-Field: reading weather markets as a frequency signal.</h2>
+          <p class="section-subcopy">
+            Temperature curves oscillate with known physical rhythms — diurnal cycles, storm
+            periodicities, seasonal patterns. The ζ-Field decomposes a market's probability
+            path into its spectral components and asks: is the live price consistent with what
+            those dominant frequencies predict?  When it isn't, that's the trade.
+          </p>
+        </div>
+
+        <div class="zeta-grid reveal">
+
+          <article class="pricer-card zeta-card">
+            <p class="pricer-card-kicker">Step 01</p>
+            <h3>Map to the real line</h3>
+            <p class="zeta-card-body">
+              Market probabilities live on (0,&nbsp;1), which breaks Fourier arithmetic.
+              The ζ-Field first applies a logit transform —
+              <span class="zeta-formula">z(t) = log(p / (1−p))</span> — pulling the path
+              onto the full real line where FFT is well-defined and linear superposition holds.
+            </p>
+          </article>
+
+          <article class="pricer-card zeta-card">
+            <p class="pricer-card-kicker">Step 02</p>
+            <h3>Decompose into frequencies</h3>
+            <p class="zeta-card-body">
+              A Fast Fourier Transform converts the logit path into its spectral
+              representation: <span class="zeta-formula">Z(ω) = FFT(z(t))</span>.
+              This is the ζ-field — a map of how much energy the market concentrates
+              at each cycle length, from multi-day trends down to intra-hour noise.
+            </p>
+          </article>
+
+          <article class="pricer-card zeta-card">
+            <p class="pricer-card-kicker">Step 03</p>
+            <h3>Reconstruct the fair value</h3>
+            <p class="zeta-card-body">
+              Keep only the top-K dominant components — the cycles that explain most
+              of the variance — and invert:
+              <span class="zeta-formula">p̂ = logistic(IFFT(Ẑ(ω)))</span>.
+              The resulting <em>spectral fair value</em> is what the market's own
+              periodic structure implies the price should be right now.
+            </p>
+          </article>
+
+          <article class="pricer-card zeta-card">
+            <p class="pricer-card-kicker">Step 04</p>
+            <h3>Detect regime shifts</h3>
+            <p class="zeta-card-body">
+              A sudden spike in high-frequency spectral power signals that the market
+              has broken from its prior regime — analogous to non-trivial zeros of the
+              Riemann ζ-function marking phase transitions in prime distribution.
+              When &gt;55&nbsp;% of power concentrates in sub-2-hour cycles, a regime
+              alert fires.
+            </p>
+          </article>
+
+        </div>
+
+        <div class="zeta-why reveal">
+          <div class="zeta-why-copy">
+            <p class="eyebrow" style="margin-bottom:0.75rem">Why traders care</p>
+            <h3>Spectral mispricing is structural, not random.</h3>
+            <p>
+              Weather markets inherit the spectral fingerprint of the underlying
+              meteorological variable.  A high-temperature contract in Phoenix tracks a
+              strong 24-hour diurnal cycle; a monthly rainfall contract in Houston reflects
+              a multi-day convective storm periodicity.  When a market's live price diverges
+              from its spectral reconstruction, one of three things is true:
+            </p>
+            <ul class="zeta-reasons">
+              <li><strong>Information arrival</strong> — new data (model run, NWS alert) broke the old cycle.  The regime detector catches this first.</li>
+              <li><strong>Liquidity gap</strong> — the bid/ask drifted without real information updating it.  The spectral gap points to the direction of reversion.</li>
+              <li><strong>Cross-market divergence</strong> — a correlated city contract moved but this one didn't.  ζ-Field discrepancy paired with the pricer's similarity score pinpoints the stale leg.</li>
+            </ul>
+          </div>
+          <div class="zeta-why-stats">
+            <div class="zeta-stat">
+              <span class="metric-value">24 h</span>
+              <span class="metric-label">Dominant diurnal cycle in temperature markets</span>
+            </div>
+            <div class="zeta-stat">
+              <span class="metric-value">7 %</span>
+              <span class="metric-label">Alert threshold — gap between market price and ζ-fair value</span>
+            </div>
+            <div class="zeta-stat">
+              <span class="metric-value">5</span>
+              <span class="metric-label">Dominant spectral components used per reconstruction</span>
+            </div>
+            <div class="zeta-stat">
+              <span class="metric-value">120 s</span>
+              <span class="metric-label">Scan cadence of the live ζ-Field scanner</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
     </main>
   </div>
 
