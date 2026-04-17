@@ -1890,21 +1890,47 @@ function initZetaSurface() {
     if (tsEl && data.timestamp) {
       const d = new Date(data.timestamp);
       const n = data.markets ? data.markets.length : 0;
-      tsEl.textContent = `Last scan: ${d.toLocaleTimeString()}  ·  ${n} markets`;
+      tsEl.textContent = `Example data  ·  ${n} markets`;
     }
   }
 
-  function fetchAndRender() {
-    fetch("./zeta_data.json?" + Date.now())
-      .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d) render(d); })
-      .catch(() => {});
+  function exampleData() {
+    const n = 35;
+    const xs = Array.from({ length: n }, (_, i) => -3 + i * 6 / (n - 1));
+    const z = [], pg = [];
+    for (let i = 0; i < n; i++) {
+      const zRow = [], pgRow = [];
+      for (let j = 0; j < n; j++) {
+        const dx = xs[i], dy = xs[j];
+        const r2 = dx * dx + dy * dy;
+        const density =
+          0.55 * Math.exp(-((dx - 1.1) ** 2 + (dy - 1.1) ** 2) / 1.6) +
+          0.40 * Math.exp(-((dx + 1.0) ** 2 + (dy + 1.0) ** 2) / 2.0) +
+          0.12 * Math.exp(-r2 / 9);
+        zRow.push(Math.min(1, density));
+        pgRow.push(6 + 14 * Math.exp(-r2 / 5));
+      }
+      z.push(zRow);
+      pg.push(pgRow);
+    }
+    const markets = [
+      { ticker: "KXLOWTNYC-26APR16-T69",  series: "KXLOWTNYC",  current_price: 0.915, spectral_fair_value: 0.733, discrepancy:  0.182, regime_shift: false, dominant_periods_h: [11.0, 8.2, 16.5] },
+      { ticker: "KXHIGHCHI-26APR17-T74",  series: "KXHIGHCHI",  current_price: 0.612, spectral_fair_value: 0.481, discrepancy:  0.131, regime_shift: false, dominant_periods_h: [9.5, 14.0, 6.8] },
+      { ticker: "KXRAINLAX-26APR18-P30",  series: "KXRAINLAX",  current_price: 0.271, spectral_fair_value: 0.389, discrepancy: -0.118, regime_shift: true,  dominant_periods_h: [5.0, 2.5, 8.3] },
+      { ticker: "KXLOWTORD-26APR16-T55",  series: "KXLOWTORD",  current_price: 0.784, spectral_fair_value: 0.672, discrepancy:  0.112, regime_shift: false, dominant_periods_h: [12.0, 7.0, 18.0] },
+      { ticker: "KXHIGHMIA-26APR17-T88",  series: "KXHIGHMIA",  current_price: 0.438, spectral_fair_value: 0.531, discrepancy: -0.093, regime_shift: false, dominant_periods_h: [10.5, 6.0, 14.5] },
+      { ticker: "KXRAINNYC-26APR19-P50",  series: "KXRAINNYC",  current_price: 0.195, spectral_fair_value: 0.276, discrepancy: -0.081, regime_shift: false, dominant_periods_h: [8.0, 11.5, 5.5] },
+      { ticker: "KXLOWTDFW-26APR18-T72",  series: "KXLOWTDFW",  current_price: 0.851, spectral_fair_value: 0.779, discrepancy:  0.072, regime_shift: false, dominant_periods_h: [13.0, 9.0, 19.0] },
+      { ticker: "KXHIGHSEA-26APR17-T60",  series: "KXHIGHSEA",  current_price: 0.334, spectral_fair_value: 0.401, discrepancy: -0.067, regime_shift: false, dominant_periods_h: [7.5, 12.5, 4.0] },
+      { ticker: "KXRAINCHI-26APR20-P40",  series: "KXRAINCHI",  current_price: 0.563, spectral_fair_value: 0.623, discrepancy: -0.060, regime_shift: false, dominant_periods_h: [11.0, 8.0, 15.0] },
+      { ticker: "KXLOWTSFO-26APR16-T58",  series: "KXLOWTSFO",  current_price: 0.712, spectral_fair_value: 0.661, discrepancy:  0.051, regime_shift: false, dominant_periods_h: [9.0, 13.5, 6.5] },
+      { ticker: "KXHIGHATL-26APR18-T91",  series: "KXHIGHATL",  current_price: 0.489, spectral_fair_value: 0.440, discrepancy:  0.049, regime_shift: false, dominant_periods_h: [10.0, 7.5, 16.0] },
+      { ticker: "KXRAINBOS-26APR19-P35",  series: "KXRAINBOS",  current_price: 0.317, spectral_fair_value: 0.358, discrepancy: -0.041, regime_shift: false, dominant_periods_h: [8.5, 12.0, 5.0] },
+    ];
+    return { timestamp: "2026-04-17T12:00:00", surface: { x: xs, y: xs, z, period_grid: pg }, markets };
   }
 
-  loadPlotly(() => {
-    fetchAndRender();
-    setInterval(fetchAndRender, 30_000);
-  });
+  loadPlotly(() => { render(exampleData()); });
 }
 
 initApp();
