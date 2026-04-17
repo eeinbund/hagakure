@@ -561,8 +561,23 @@ async def main() -> None:
             await asyncio.sleep(SCAN_INTERVAL)
 
 
+async def scan_once_and_exit() -> None:
+    """Single-shot mode used by CI/cron (python zeta_scanner.py --once)."""
+    async with httpx.AsyncClient() as client:
+        results = await scan_once(client)
+    if results:
+        print_summary(results)
+        write_zeta_json(results)
+    else:
+        print("No results — skipping JSON write.")
+
+
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("\nScanner stopped.")
+    import sys
+    if "--once" in sys.argv:
+        asyncio.run(scan_once_and_exit())
+    else:
+        try:
+            asyncio.run(main())
+        except KeyboardInterrupt:
+            print("\nScanner stopped.")

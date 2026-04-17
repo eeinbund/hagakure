@@ -4,6 +4,7 @@
 !.github/workflows/
 !.github/workflows/deploy-pages.yml
 !.github/workflows/deploy-cloudflare.yml
+!.github/workflows/zeta_scan.yml
 !README.md
 !wrangler.jsonc
 !frontend/
