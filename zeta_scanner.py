@@ -49,11 +49,12 @@ SCAN_INTERVAL     = 120    # seconds between full scans
 ALERT_THRESHOLD   = 0.07   # |market − ζ-fair| in cents (0–1 scale) to notify
 REGIME_THRESHOLD  = 0.55   # high-freq power fraction that flags a regime shift
 TOP_N_MARKETS     = 20     # how many markets to analyse per cycle (by 24h vol)
-MIN_CANDLES       = 16     # minimum candles required for a reliable FFT
+MIN_CANDLES       = 8      # minimum candles required for a reliable FFT
 TOP_K_COMPONENTS  = 5      # dominant spectral components used for reconstruction
 CANDLE_MINUTES    = 60     # Kalshi candlestick period (minutes)
-HISTORY_HOURS     = 24     # hours of history to pull per market
+HISTORY_HOURS     = 168    # hours of history to pull per market (7 days)
 SERIES_TTL        = 3600   # seconds between series-list refreshes
+CANDLE_CONCURRENCY = 5     # max parallel candlestick requests (avoid 429s)
 
 ZETA_JSON_PATH = Path(__file__).parent / "frontend" / "zeta_data.json"
 
@@ -120,6 +121,9 @@ def notify(title: str, body: str) -> None:
 
 # ── Kalshi API helpers ─────────────────────────────────────────────────────────
 
+_candle_sem: Optional[asyncio.Semaphore] = None
+
+
 async def fetch_json(client: httpx.AsyncClient, url: str, params: dict | None = None) -> dict:
     r = await client.get(url, params=params or {}, timeout=20)
     r.raise_for_status()
@@ -142,23 +146,61 @@ async def get_candlesticks(
 ) -> list[dict]:
     now   = int(time.time())
     start = now - HISTORY_HOURS * 3600
-    try:
-        data = await fetch_json(
-            client,
-            f"{KALSHI_BASE}/series/{series_ticker}/markets/{market_ticker}/candlesticks",
-            {
-                "start_ts":                   start,
-                "end_ts":                     now,
-                "period_interval":            CANDLE_MINUTES,
-                "include_latest_before_start": "true",
-            },
-        )
-        return data.get("candlesticks", [])
-    except Exception:
-        return []
+    params = {
+        "start_ts":                    start,
+        "end_ts":                      now,
+        "period_interval":             CANDLE_MINUTES,
+        "include_latest_before_start": "true",
+    }
+    url = f"{KALSHI_BASE}/series/{series_ticker}/markets/{market_ticker}/candlesticks"
+    global _candle_sem
+    if _candle_sem is None:
+        _candle_sem = asyncio.Semaphore(CANDLE_CONCURRENCY)
+    async with _candle_sem:
+        for attempt in range(3):
+            try:
+                data = await fetch_json(client, url, params)
+                return data.get("candlesticks", [])
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code == 429 and attempt < 2:
+                    await asyncio.sleep(2 ** attempt)
+                    continue
+                return []
+            except Exception:
+                return []
+    return []
 
 
 # ── Price extraction ───────────────────────────────────────────────────────────
+
+def _mid_price(market: dict) -> Optional[float]:
+    """Extract mid-price (0–1) from a live market dict. Returns None if missing."""
+    def _f(key: str) -> Optional[float]:
+        v = market.get(key)
+        if v is None:
+            return None
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return None
+
+    # Prefer _dollars variants (already 0–1 scale); fall back to integer-cent fields
+    bid  = _f("yes_bid_dollars")  if market.get("yes_bid_dollars")  is not None else _f("yes_bid")
+    ask  = _f("yes_ask_dollars")  if market.get("yes_ask_dollars")  is not None else _f("yes_ask")
+    last = _f("last_price_dollars") if market.get("last_price_dollars") is not None else _f("last_price")
+
+    if bid is not None and ask is not None:
+        mid = (bid + ask) / 2.0
+    elif last is not None:
+        mid = last
+    else:
+        return None
+
+    # Normalise if API returned integer cents (0–100) instead of probability (0–1)
+    if mid > 1.0:
+        mid /= 100.0
+    return mid
+
 
 def extract_price_series(candles: list[dict]) -> np.ndarray:
     """
@@ -171,17 +213,27 @@ def extract_price_series(candles: list[dict]) -> np.ndarray:
         ask_obj   = c.get("yes_ask") or {}
         price_obj = c.get("price")   or {}
 
-        bid   = bid_obj.get("close")
-        ask   = ask_obj.get("close")
-        close = price_obj.get("close")
+        # API returns nested objects with close_dollars (string, 0–1 scale)
+        # or occasionally a bare close (integer cents); handle both.
+        def _close(obj: dict) -> Optional[float]:
+            for key in ("close_dollars", "close"):
+                v = obj.get(key)
+                if v is not None:
+                    try:
+                        f = float(v)
+                        return f / 100.0 if f > 1.0 else f
+                    except (TypeError, ValueError):
+                        pass
+            return None
 
-        try:
-            if bid is not None and ask is not None:
-                prices.append((float(bid) + float(ask)) / 2.0)
-            elif close is not None:
-                prices.append(float(close))
-        except (TypeError, ValueError):
-            pass
+        bid   = _close(bid_obj)
+        ask   = _close(ask_obj)
+        close = _close(price_obj)
+
+        if bid is not None and ask is not None:
+            prices.append((bid + ask) / 2.0)
+        elif close is not None:
+            prices.append(close)
 
     return np.array(prices, dtype=float)
 
@@ -324,13 +376,18 @@ async def scan_once(client: httpx.AsyncClient) -> list[SpectralResult]:
         return_exceptions=True,
     )
 
-    # 3. Flatten, sort by 24h volume, take top N
-    flat: list[tuple[str, dict]] = []
+    # 3. Flatten and filter to mid-range prices before sorting by volume.
+    #    Near-resolved markets (price ≤ 3 % or ≥ 97 %) dominate by volume but
+    #    carry no spectral information; filtering them first ensures the top-N
+    #    slots go to markets where the FFT is actually meaningful.
+    flat: list[tuple[str, dict, float]] = []
     for series_ticker, batch in zip(series_list, batches):
         if isinstance(batch, Exception):
             continue
         for m in batch:
-            flat.append((series_ticker, m))
+            p = _mid_price(m)
+            if p is not None and 0.03 < p < 0.97:
+                flat.append((series_ticker, m, p))
 
     flat.sort(key=lambda x: float(x[1].get("volume_24h_fp", 0) or 0), reverse=True)
     flat = flat[:TOP_N_MARKETS]
@@ -340,33 +397,15 @@ async def scan_once(client: httpx.AsyncClient) -> list[SpectralResult]:
 
     # 4. Fetch candlestick history concurrently
     candle_batches = await asyncio.gather(
-        *[get_candlesticks(client, series, m["ticker"]) for series, m in flat],
+        *[get_candlesticks(client, series, m["ticker"]) for series, m, _ in flat],
         return_exceptions=True,
     )
 
     # 5. Run spectral analysis
     results: list[SpectralResult] = []
-    for (series, market), candles in zip(flat, candle_batches):
+    for (series, market, current_price), candles in zip(flat, candle_batches):
         ticker = market.get("ticker", "?")
         title  = market.get("title", ticker)
-
-        # Determine live mid-price
-        bid  = market.get("yes_bid_dollars")  or market.get("yes_bid")
-        ask  = market.get("yes_ask_dollars")  or market.get("yes_ask")
-        last = market.get("last_price_dollars") or market.get("last_price")
-        try:
-            if bid is not None and ask is not None:
-                current_price = (float(bid) + float(ask)) / 2.0
-            elif last is not None:
-                current_price = float(last)
-            else:
-                continue
-        except (TypeError, ValueError):
-            continue
-
-        # Skip markets that are nearly resolved (price hugging 0 or 1)
-        if not (0.03 < current_price < 0.97):
-            continue
 
         if isinstance(candles, Exception) or len(candles) < MIN_CANDLES:
             continue
