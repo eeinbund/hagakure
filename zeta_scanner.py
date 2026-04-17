@@ -29,10 +29,13 @@ Tune the constants below to adjust sensitivity.
 """
 
 import asyncio
+import json
+import re
 import subprocess
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 import httpx
@@ -50,18 +53,21 @@ MIN_CANDLES       = 16     # minimum candles required for a reliable FFT
 TOP_K_COMPONENTS  = 5      # dominant spectral components used for reconstruction
 CANDLE_MINUTES    = 60     # Kalshi candlestick period (minutes)
 HISTORY_HOURS     = 24     # hours of history to pull per market
+SERIES_TTL        = 3600   # seconds between series-list refreshes
 
-# Weather series tickers (same set watched by the Hagakure site)
-WEATHER_SERIES = [
-    "KXHIGHNY",  "KXHIGHLA",  "KXHIGHCHI", "KXHIGHSF",
-    "KXHIGHPHX", "KXHIGHATL", "KXHIGHBOS", "KXHIGHLV",
-    "KXHIGHSEA",
-    "KXLOWNYC",  "KXLOWSF",   "KXLOWSEA",  "KXLOWDAL",
-    "KXLOWDC",   "KXLOWMIN",  "KXLOWDEN",  "KXLOWATL",
-    "KXLOWNO",   "KXLOWLV",
-    "KXRAINHOU", "KXRAINNYC", "KXRAINDEN",
-    "KXSNOWNYC", "KXSNOWCHI",
-]
+ZETA_JSON_PATH = Path(__file__).parent / "frontend" / "zeta_data.json"
+
+# Same keyword filter as kalshi_utils.fetch_weather_series()
+_WEATHER_KEYWORDS = re.compile(
+    r"\b(weather|temperature|temp|rain|rainfall|snow|snowfall|wind|"
+    r"precipitation|storm|climate|hurricane|tornado|flood|drought|"
+    r"heat|cold|frost|ice|hail|humidity|celsius|fahrenheit)\b",
+    re.IGNORECASE,
+)
+
+# Module-level cache populated by get_weather_series()
+_series_cache: list[str] = []
+_series_fetched_at: float = 0.0
 
 
 # ── Data types ─────────────────────────────────────────────────────────────────
@@ -78,6 +84,7 @@ class SpectralResult:
     regime_shift: bool            # True if high-freq power spike detected
     regime_ratio: float           # fraction of spectral power in high freq
     n_candles: int
+    z_hat: list = field(default_factory=list)  # reconstructed logit signal
 
 
 # ── Math helpers ───────────────────────────────────────────────────────────────
@@ -241,7 +248,64 @@ def spectral_analysis(price_series: np.ndarray, current_price: float) -> dict:
         "dominant_periods_h":  dominant_periods_h,
         "regime_shift":        regime_ratio > REGIME_THRESHOLD,
         "regime_ratio":        regime_ratio,
+        "z_hat":               z_hat.tolist(),
     }
+
+
+# ── Live series discovery ──────────────────────────────────────────────────────
+
+async def get_weather_series(client: httpx.AsyncClient) -> list[str]:
+    """
+    Return a deduplicated list of weather series tickers from the Kalshi API.
+    Mirrors the logic in kalshi_utils.fetch_weather_series() but uses httpx so
+    it fits naturally into the async scan loop.  Results are cached for SERIES_TTL
+    seconds so the scanner doesn't re-page the full catalogue every 2 minutes.
+    """
+    global _series_cache, _series_fetched_at
+
+    if _series_cache and (time.time() - _series_fetched_at) < SERIES_TTL:
+        return _series_cache
+
+    series_list: list[dict] = []
+    cursor: Optional[str] = None
+
+    while True:
+        params: dict = {"limit": 200}
+        if cursor:
+            params["cursor"] = cursor
+        try:
+            data = await fetch_json(client, f"{KALSHI_BASE}/series", params)
+        except Exception as exc:
+            ts = datetime.now().strftime("%H:%M:%S")
+            print(f"[{ts}]  Series fetch error: {exc}")
+            break
+
+        batch = data.get("series", [])
+        for s in batch:
+            blob = " ".join(filter(None, [
+                s.get("title", ""), s.get("ticker", ""), s.get("category", ""),
+            ]))
+            if _WEATHER_KEYWORDS.search(blob):
+                series_list.append(s)
+
+        cursor = data.get("cursor")
+        if not cursor or not batch:
+            break
+
+    # Deduplicate: prefer KX-prefixed ticker (e.g. KXSNOWNYC over SNOWNYC)
+    seen: dict[str, str] = {}
+    for s in series_list:
+        ticker = s["ticker"]
+        base = ticker[2:] if ticker.startswith("KX") else ticker
+        if base not in seen or ticker.startswith("KX"):
+            seen[base] = ticker
+
+    _series_cache = list(seen.values())
+    _series_fetched_at = time.time()
+
+    ts = datetime.now().strftime("%H:%M:%S")
+    print(f"[{ts}]  Discovered {len(_series_cache)} weather series from Kalshi")
+    return _series_cache
 
 
 # ── Single scan ────────────────────────────────────────────────────────────────
@@ -249,15 +313,20 @@ def spectral_analysis(price_series: np.ndarray, current_price: float) -> dict:
 async def scan_once(client: httpx.AsyncClient) -> list[SpectralResult]:
     """Fetch markets → candlesticks → spectral analysis.  Returns all results."""
 
-    # 1. Gather open markets for every watched series concurrently
+    # 1. Discover live weather series (cached; refreshes every SERIES_TTL seconds)
+    series_list = await get_weather_series(client)
+    if not series_list:
+        return []
+
+    # 2. Gather open markets for every series concurrently
     batches = await asyncio.gather(
-        *[get_open_markets(client, s) for s in WEATHER_SERIES],
+        *[get_open_markets(client, s) for s in series_list],
         return_exceptions=True,
     )
 
-    # 2. Flatten, sort by 24h volume, take top N
+    # 3. Flatten, sort by 24h volume, take top N
     flat: list[tuple[str, dict]] = []
-    for series_ticker, batch in zip(WEATHER_SERIES, batches):
+    for series_ticker, batch in zip(series_list, batches):
         if isinstance(batch, Exception):
             continue
         for m in batch:
@@ -269,13 +338,13 @@ async def scan_once(client: httpx.AsyncClient) -> list[SpectralResult]:
     if not flat:
         return []
 
-    # 3. Fetch candlestick history concurrently
+    # 4. Fetch candlestick history concurrently
     candle_batches = await asyncio.gather(
         *[get_candlesticks(client, series, m["ticker"]) for series, m in flat],
         return_exceptions=True,
     )
 
-    # 4. Run spectral analysis
+    # 5. Run spectral analysis
     results: list[SpectralResult] = []
     for (series, market), candles in zip(flat, candle_batches):
         ticker = market.get("ticker", "?")
@@ -319,9 +388,82 @@ async def scan_once(client: httpx.AsyncClient) -> list[SpectralResult]:
             regime_shift        = analysis["regime_shift"],
             regime_ratio        = analysis["regime_ratio"],
             n_candles           = len(price_series),
+            z_hat               = analysis["z_hat"],
         ))
 
     return results
+
+
+# ── ζ-Field JSON export (feeds browser visualization) ─────────────────────────
+
+def _build_surface(results: list[SpectralResult]) -> dict:
+    """Compute phase-space delay-embedding density surface across all markets."""
+    all_zt: list[float] = []
+    all_zt1: list[float] = []
+    all_per: list[float] = []
+
+    for r in results:
+        zh = r.z_hat
+        if len(zh) < 2:
+            continue
+        all_zt.extend(zh[1:])
+        all_zt1.extend(zh[:-1])
+        period = r.dominant_periods_h[0] if r.dominant_periods_h else 12.0
+        all_per.extend([period] * (len(zh) - 1))
+
+    if not all_zt:
+        return {}
+
+    zt  = np.array(all_zt,  dtype=float)
+    zt1 = np.array(all_zt1, dtype=float)
+    per = np.array(all_per, dtype=float)
+
+    # Clip extremes so the surface isn't dominated by outliers
+    p5, p95 = np.percentile(zt, 5), np.percentile(zt, 95)
+    mask = (zt >= p5) & (zt <= p95) & (zt1 >= p5) & (zt1 <= p95)
+    zt, zt1, per = zt[mask], zt1[mask], per[mask]
+
+    bins = 35
+    H, xedges, yedges = np.histogram2d(zt, zt1, bins=bins)
+    H = H / H.max() if H.max() > 0 else H
+
+    xc = ((xedges[:-1] + xedges[1:]) / 2).tolist()
+    yc = ((yedges[:-1] + yedges[1:]) / 2).tolist()
+
+    # Per-cell mean dominant period → coloring
+    per_sum = np.zeros((bins, bins))
+    per_cnt = np.zeros((bins, bins))
+    xi = np.clip(np.digitize(zt,  xedges[:-1]) - 1, 0, bins - 1)
+    yi = np.clip(np.digitize(zt1, yedges[:-1]) - 1, 0, bins - 1)
+    np.add.at(per_sum, (xi, yi), per)
+    np.add.at(per_cnt, (xi, yi), 1)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        per_grid = np.where(per_cnt > 0, per_sum / per_cnt, 0.0)
+
+    return {"x": xc, "y": yc, "z": H.tolist(), "period_grid": per_grid.tolist()}
+
+
+def write_zeta_json(results: list[SpectralResult]) -> None:
+    payload = {
+        "timestamp": datetime.now().isoformat(),
+        "surface":   _build_surface(results),
+        "markets": [
+            {
+                "ticker":               r.ticker,
+                "series":               r.series,
+                "current_price":        round(r.current_price,       4),
+                "spectral_fair_value":  round(r.spectral_fair_value, 4),
+                "discrepancy":          round(r.discrepancy,         4),
+                "regime_shift":         r.regime_shift,
+                "dominant_periods_h":   r.dominant_periods_h[:3],
+            }
+            for r in sorted(results, key=lambda x: abs(x.discrepancy), reverse=True)
+        ],
+    }
+    ZETA_JSON_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(ZETA_JSON_PATH, "w") as fh:
+        json.dump(payload, fh, separators=(",", ":"))
+    print(f"  [viz] ζ-data → {ZETA_JSON_PATH}")
 
 
 # ── Terminal display ───────────────────────────────────────────────────────────
@@ -364,7 +506,7 @@ async def main() -> None:
     print(f"  Scan interval    : {SCAN_INTERVAL}s")
     print(f"  Markets per scan : top {TOP_N_MARKETS} by 24h volume")
     print(f"  Spectral depth   : {TOP_K_COMPONENTS} dominant components, {HISTORY_HOURS}h history")
-    print(f"  Series watched   : {len(WEATHER_SERIES)}")
+    print(f"  Series watched   : discovered live from Kalshi on first scan")
     print()
     print("  Starting first scan…")
 
@@ -376,6 +518,7 @@ async def main() -> None:
             try:
                 results = await scan_once(client)
                 print_summary(results)
+                write_zeta_json(results)
 
                 for r in results:
                     abs_gap   = abs(r.discrepancy)

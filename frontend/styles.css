@@ -1308,6 +1308,40 @@ main {
   gap: 0.35rem;
 }
 
+.zeta-surface-wrap {
+  margin-top: 3.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: #000;
+}
+
+.zeta-surface-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.4rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.zeta-surface-ts {
+  font-family: var(--mono, "IBM Plex Mono", monospace);
+  font-size: 0.78rem;
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.zeta-surface-plot {
+  width: 100%;
+  height: 480px;
+}
+
+@media (max-width: 980px) {
+  .zeta-surface-plot {
+    height: 340px;
+  }
+}
+
 @media (max-width: 980px) {
   .desktop-nav {
     display: none;

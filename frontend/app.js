@@ -1811,6 +1811,100 @@ function initApp() {
   initNavTracking();
   initChart();
   initPricer();
+  initZetaSurface();
+}
+
+// ── ζ-Field 3D surface ─────────────────────────────────────────────────────────
+function initZetaSurface() {
+  const el = document.getElementById("zeta-surface");
+  if (!el) return;
+
+  let azimuth = -60;
+  let spinId = null;
+  let plotReady = false;
+
+  function loadPlotly(cb) {
+    if (window.Plotly) { cb(); return; }
+    const s = document.createElement("script");
+    s.src = "https://cdn.plot.ly/plotly-2.27.0.min.js";
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+
+  function cameraEye() {
+    const r = 1.85;
+    return { x: Math.cos(azimuth * Math.PI / 180) * r, y: Math.sin(azimuth * Math.PI / 180) * r, z: 1.15 };
+  }
+
+  function spin() {
+    if (!plotReady) return;
+    azimuth += 0.12;
+    Plotly.relayout(el, { "scene.camera.eye": cameraEye() });
+    spinId = requestAnimationFrame(spin);
+  }
+
+  function render(data) {
+    const s = data.surface;
+    if (!s || !s.z || !s.z.length) return;
+
+    if (spinId) cancelAnimationFrame(spinId);
+    plotReady = false;
+
+    const trace = {
+      type: "surface",
+      x: s.x, y: s.y, z: s.z,
+      surfacecolor: s.period_grid,
+      colorscale: "Plasma",
+      showscale: true,
+      colorbar: {
+        title: { text: "PERIODICITY", font: { color: "#666", size: 9 } },
+        tickfont: { color: "#666", size: 8 },
+        thickness: 10, len: 0.55, x: 1.02,
+      },
+      opacity: 0.9,
+      lighting: { ambient: 0.85, diffuse: 0.55, specular: 0.25, roughness: 0.55 },
+      contours: { x: { highlight: false }, y: { highlight: false }, z: { highlight: false } },
+    };
+
+    const axisStyle = { color: "#444", gridcolor: "#1e1e1e", zerolinecolor: "#333", tickfont: { color: "#555", size: 8 } };
+    const layout = {
+      paper_bgcolor: "transparent",
+      scene: {
+        bgcolor: "#000",
+        xaxis: { ...axisStyle, title: { text: "φ(t)", font: { color: "#555", size: 10 } } },
+        yaxis: { ...axisStyle, title: { text: "φ(t−1)", font: { color: "#555", size: 10 } } },
+        zaxis: { ...axisStyle, title: { text: "ζ-density", font: { color: "#555", size: 10 } } },
+        camera: { eye: cameraEye() },
+        aspectratio: { x: 1, y: 1, z: 0.65 },
+      },
+      margin: { l: 0, r: 40, t: 0, b: 0 },
+      font: { color: "#666" },
+    };
+
+    Plotly.react(el, [trace], layout, { displayModeBar: false, responsive: true }).then(() => {
+      plotReady = true;
+      spin();
+    });
+
+    const tsEl = document.getElementById("zeta-surface-ts");
+    if (tsEl && data.timestamp) {
+      const d = new Date(data.timestamp);
+      const n = data.markets ? data.markets.length : 0;
+      tsEl.textContent = `Last scan: ${d.toLocaleTimeString()}  ·  ${n} markets`;
+    }
+  }
+
+  function fetchAndRender() {
+    fetch("./zeta_data.json?" + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) render(d); })
+      .catch(() => {});
+  }
+
+  loadPlotly(() => {
+    fetchAndRender();
+    setInterval(fetchAndRender, 30_000);
+  });
 }
 
 initApp();
